@@ -79,7 +79,7 @@ socket.on('connect', () => {
     //---------------------------------------------------------------------
     // respond with message ID : 4400h => Acknowledgemt to the Data received
     socket.on('4400h', (nodeInfo) => {  
-        console.log('\n\n => ack => ', JSON.stringify(nodeInfo, null, 4));
+        console.log('\n\n  ack <-: ', JSON.stringify(nodeInfo, null, 4));
         // retrieve the payload and process it
 
         // format the acknowlegemet message
@@ -148,7 +148,7 @@ socket.on('connect', () => {
                     console.log('recipient node did not respond!');
                 } else {
 
-                    console.log('\n\n => ack :->  ', JSON.stringify(ack, null, 4));
+                    console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
                 }
             });
         }
