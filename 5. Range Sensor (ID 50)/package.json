@@ -1,0 +1,14 @@
+{
+  "name": "gbat-sensors",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sensors.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin K. Mwila",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^1.7.2"
+  }
+}
