@@ -1,66 +1,30 @@
-// const express = require('express');
-// const path = require('path');
-// const favicon = require('serve-favicon');
-// const logger = require('morgan');
-// const cookieParser = require('cookie-parser');
-// const bodyParser = require('body-parser');
-// const fs = require("fs");
+/*  File name : world-model.js
+   ===============================================================================================
+	Component ID = 61
+	Function : 
+
+    It is implemented in Node.js as a socket-io clients  connecting to a server 
+    running on the communicator node.
+
+	Author : Martin K. Mwila
+    Title : Senior Electronic Engineer.
+    Company : CSIR - DPSS - Landward Sciences
+    Project : G-Bat Autonomous Navigation System
+    Date  : 19-Jan-2017
+
+================================================================================================ */
+
 const model = require('./models/atn_models');
 const world_model_schema = model.world_model;
-// const moment = require('moment');
-// const PORT = 5000;
+const moment = require('moment');
 const io = require('socket.io-client');
-const socket = io.connect('http://localhost:3000', { reconnect: true });  // replaced the ip address 
-
-// var app = express();
-// var server = require('http').createServer(app);//
+const socket = io.connect('http://communicator.local:3000', { reconnect: true });  // replaced the ip address 
 
 var me = {
     id: 61,
     name: 'Vector Knowledge Store'
 };
 
-/*
-console.log('about to insert the file');
-fs.readFile('./subSystems/map.json', function (err, data) {
-                 
-                 console.log('insde the file', data.toString());
-                new world_model_schema({"time_stamp":Date.now(),'from':'worldModel','location':{
-                         'x':2,'y':-23,'r':4.50}, 'to':'planner','speed':11.11,'destination':{'x':13,'y':-14,'r':2.50}, 'map':data 
-                 }).save(function(err){
-                         if(err){
-                               //  res.send('file not save' + err);
-                         }else{
-                                console.log('file saved !!');
-                         }
-                 });
-                 world_model_schema.find().exec(function(err,results){
-                        if(err){
-                              //  return res.send(err);
-                              console.log('There was an error while trying to get the map ' + err);
-
-                        }else{
-                           
-                                                              // console.log('result',results);
-                                                               console.log('mappping the results',String.fromCharCode(results.map[0]));
-                        }
-
-                 });
-
-         });
-        
-
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-*/
 
 //==================================================================================================================
 //                                         1. Connecting to the G-Bat Network
@@ -270,8 +234,8 @@ socket.on('connect', () => { // begining of the connection estalished block of c
         nodeInfo.sender = me;
         nodeInfo.timeStamp = Date.now();
         nodeInfo.sequenceNo = 1;
-     ;
-        console.log('getting the map:::');
+   
+        console.log('getting the map...');
         // have the data in the database
         // call mongo data
         world_model_schema.find().exec(function (err, results) {
@@ -299,15 +263,8 @@ socket.on('connect', () => { // begining of the connection estalished block of c
             }
 
 
-
         });
     });//
 
 });
-
-// server.listen(PORT, () => {
-
-//     console.log(` ****** World Model Vector Knowledge Store is running on Port ${PORT} ********`);
-// });
-
 
