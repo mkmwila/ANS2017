@@ -15,7 +15,7 @@
 
    var me = {
     id:81 ,
-    name: 'Missiion Planner'
+    name: 'Mission Planner'
 };
 var systemTree = [me];
 
