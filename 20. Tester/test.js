@@ -75,6 +75,38 @@ socket.on('connect', () => {
 
     });
 
+     // Receive acknowledgement : Message ID = 4400h
+    //---------------------------------------------------------------------
+    // respond with message ID : 4400h => Acknowledgemt to the Data received
+    socket.on('4400h', (nodeInfo) => {  
+        console.log('\n\n => ack => ', JSON.stringify(nodeInfo, null, 4));
+        // retrieve the payload and process it
+
+        // format the acknowlegemet message
+        var ackData= {};
+        nodeInfo.messageID = '4400h';
+        nodeInfo.data =ackData; // ideally update with data read from hardware
+        nodeInfo.sequenceNo = 1;
+
+    });
+
+   // Receive map data from Vector knowledge store : Message ID = 4400h
+    //---------------------------------------------------------------------
+    // respond with message ID : 4400h => Acknowledgemt to the Data received
+    socket.on('4A23h', (nodeInfo) => {  
+        console.log('\n\n => Received  Map data => ', JSON.stringify(nodeInfo, null, 4));
+        // retrieve the payload and process it
+
+        // format the acknowlegemet message
+        var ackData= {};
+        nodeInfo.messageID = '4400h';
+        nodeInfo.data =ackData; // ideally update with data read from hardware
+        nodeInfo.sequenceNo = 1;
+
+    });
+
+
+
   
     // Hanling disconnection
     //----------------------
@@ -84,13 +116,12 @@ socket.on('connect', () => {
 
 
 
-
-    console.log('\n\n**** Starting the JAUS  Tester ....... ****');
+    console.log('\n\n**** Starting the JAUS  Tester ....... ****\n\n');
     setTimeout(() => {
         // initialising the message  to be sent
-        var messageID = '2402h';
+        var messageID = '0A20h';
         var data = {};
-        var recipientID = 41;
+        var recipientID = 61;
         var sequence = 1;
 
         // Checking if recipient node is connected   
