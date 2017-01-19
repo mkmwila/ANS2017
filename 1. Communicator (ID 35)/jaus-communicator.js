@@ -549,6 +549,38 @@ io.on('connection', (socket) => { // socket io connection
     acknowledge(ack);
     clearTimeout(nack);
   });
+
+// 1.15 Acknowledgement : Message ID = 4400h
+  //-----------------------------------------------------
+  socket.on('4400h', (nodeInfo, acknowledge) => {
+    console.log(`\n => ${nodeInfo.sender.name} is sending an Acknowledgement ${nodeInfo.recipient.name}`);
+
+    // NB. Refactoring : The following block of code must be a function
+    // as it appears in every message event
+
+    var ack = {
+      command: '4E00h',
+      sender: nodeInfo.sender.name,
+      sequence: nodeInfo.sequence
+    };
+
+    // checking if recipient is still connected 
+    var sentTo = systemTree.filter((node) => {
+      return node.name === nodeInfo.recipient.name;
+    });
+
+    // retrieving its socket id  
+    var destination = sentTo[0].socketID;
+
+    //Formatting 
+    ack.recipient = sentTo[0].name;
+    ack.timestamp = moment().valueOf();
+    var nack = setTimeout(() => { console.log('Timed out!') }, 1000);  // do something about this
+    socket.broadcast.to(destination).emit(nodeInfo.messageID, nodeInfo);
+    acknowledge(ack);
+    clearTimeout(nack);
+  });
+
   //==========================================================================================
   //                          2. Global Pose Sensor services
   //==========================================================================================
