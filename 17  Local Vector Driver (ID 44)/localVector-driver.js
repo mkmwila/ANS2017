@@ -12,6 +12,10 @@
     Project : G-Bat Autonomous Navigation System
     Date  : 10-Jan-2017
     ==========================================================================*/
+const moment = require('moment');
+const io = require('socket.io-client');
+const socket = io.connect('communicator.local:3000', { reconnect: true });  // replaced the ip address 
+
 
    var me = {
     id: 44,
@@ -80,11 +84,11 @@ socket.on('connect', () => { // begining of the connection estalished block of c
     // execute the list as set in nodeInfo.data
 
     socket.on('041Eh', (nodeInfo) => {
-        var ExecuteList = nodeinfo.data;
+        var ExecuteList = nodeInfo.data;
         nodeInfo.messageID = '4400h';
         nodeInfo.sequenceNo = 1;
 
-        console.log('\n\n =>Executing  List...\n\n');
+        console.log('\n\n =>List to be executed...\n\n', JSON.stringify(ExecuteList,null,4));
 
         nodeInfo.data = ExecuteList; // ideally update with executed list and status ( probably in a loop)
     });

@@ -13,11 +13,17 @@
     Date  : 10-Jan-2017
     ==========================================================================*/
 
+const moment = require('moment');
+const io = require('socket.io-client');
+const socket = io.connect('communicator.local:3000', { reconnect: true });  // replaced the ip address 
+
    var me = {
     id: 48,
     name: 'Local Path Segment Driver'
 };
 var systemTree = [me];
+
+var mapData = {};
 
 console.log('\n\n***** Local Path Segment Driver is Running! *****\n')
 //==================================================================================================================
@@ -58,137 +64,194 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 //==================================================================================================================
 //                                          2.Handling messages
 //==================================================================================================================
-
-    // 2.1 SetTravelSpeed : Message ID = 040Ah
+ // Receive map data from Vector knowledge store : Message ID = 4400h
     //---------------------------------------------------------------------
-    // respond with message ID : 4400h => Acknowledgemt to the set 
+    // respond with message ID : 4400h => Acknowledgemt to the Data received
+    socket.on('4A23h', (nodeInfo) => {  
+        console.log('\n\n => Received  Map data => ', JSON.stringify(nodeInfo, null, 4));
+        // retrieve the payload and process it
+        mapData = nodeInfo.data;
+        // format the acknowlegemet message
+        var ackData= {};
+        nodeInfo.messageID = '4400h';
+        nodeInfo.data =ackData; // ideally update with data read from hardware
+        nodeInfo.sequenceNo = 1;
+
+    });
+    
+    // Receive acknowledgement : Message ID = 4400h
+    //---------------------------------------------------------------------
+    // respond with message ID : 4400h => Acknowledgemt to the Data received
+    socket.on('4400h', (nodeInfo) => {  
+        console.log('\n\n  ack <-: ', JSON.stringify(nodeInfo, null, 4));
+        // retrieve the payload and process it
+
+        // format the acknowlegemet message
+        var ackData= {};
+        nodeInfo.messageID = '4400h';
+        nodeInfo.data =ackData; // ideally update with data read from hardware
+        nodeInfo.sequenceNo = 1;
+
+    });
+
+     // Receive Global Pose : Message ID = 4402h ( if needed)
+    //---------------------------------------------------------------------
+    // respond with message ID : 4400h => Acknowledgemt to the Data received
+    socket.on('4402h', (nodeInfo) => {  
+        console.log('\n\n => Received  Global Pose Data... => ', JSON.stringify(nodeInfo, null, 4));
+        // retrieve the payload and process it
+
+        // format the acknowlegemet message
+        var ackData= {};
+        nodeInfo.messageID = '4400h';
+        nodeInfo.data =ackData; // ideally update with data read from hardware
+        nodeInfo.sequenceNo = 1;
+
+    });
+       
+    });// end of the connection estalished block of code
+
+//=============================================================================================
+// what it can do after connection is established  -> to be inplemented in your code 
+//=============================================================================================
+
+        
+
+    // 2.1  2.3 Query Vector Knowledge Store Object : Message ID : 2A23h ( query Map)
+    //-------------------------------------------------------------------------------
+    // responded to with message ID : 4A23h => getting the map
     // set the travel speed
 
-    socket.on('040Ah', (nodeInfo) => {
-        var travelSpeed = nodeinfo.data;
-        nodeInfo.messageID = '4400h';
-        nodeInfo.data = travelSpeed; // ideally update with data readfrom hardware
-        nodeInfo.sequenceNo = 1;
 
-        console.log('\n\n => Setting Travel Speed...\n\n');
 
-    });
-
-    // 2.2  ExecuteList : Message ID = 041Eh
+    // 2.2 SetTravelSpeed : Message ID = 040Ah
     //---------------------------------------------------------------------
-    // respond with message ID : 4400h => Acknowledgemt to the set command
-    // execute the list as set in nodeInfo.data
-
-    socket.on('041Eh', (nodeInfo) => {
-        var ExecuteList = nodeinfo.data;
-        nodeInfo.messageID = '4400h';
-        nodeInfo.sequenceNo = 1;
-
-        console.log('\n\n =>Executing  List...\n\n');
-
-        nodeInfo.data = ExecuteList; // ideally update with executed list and status ( probably in a loop)
-    });
-
- // 2.3 QueryTravelSpeed : Message ID = 240Ah
-    //----------------------------------------------------
-    // Respond with message ID : 440Ah => ReportTravelSpeed
-    socket.on('240Ah', (nodeInfo) => {
-    // log to console -> can also log to file
-    console.log(`\n\n =>  Query of Travel Speed received  from ${nodeInfo.sender.name}!`);
-    console.log(`\null => sending Travel Speed data to ${nodeInfo.sender.name}...`); 
-
-    // get Global Pose data from hardware. Here we use dummy data    
-        var LPoseData = {
-            "Timestamp": Date.now(),
-            "x": 15,
-            "y": -25,
-            "r": 20.5,
-            "speed": 1.3
-        };
-    // Format the packet to send  
-        nodeInfo.messageID = '440Ah';
-        nodeInfo.data = LPoseData;
-        nodeInfo.sequenceNo = 1;
-    // send the response -> this block of code must be in a function   
-        nodeInfo.recipient = nodeInfo.sender;
-        nodeInfo.sender = me;
-        nodeInfo.timeStamp = Date.now();
-        socket.emit(nodeInfo.messageID, nodeInfo, (ack) => { //socket io emit block
-            if (ack.recipient === 'undefined') {
-                console.log('recipient node did not respond!');
-            } else {
-
-                console.log('\n\n => ack :->  ', JSON.stringify(ack, null, 4));
-            }
-        });//end of socket io emit block
-    });
-
-//==================================================================================================================
-//                                          2.Handling messages
-//==================================================================================================================
-
-    // 2.1 SetTravelSpeed : Message ID = 040Ah
-    //---------------------------------------------------------------------
-    // respond with message ID : 4400h => Acknowledgemt to the set 
+    // responded to with message ID : 4400h => Acknowledgemt to the set 
     // set the travel speed
 
-    socket.on('040Ah', (nodeInfo) => {
-        var travelSpeed = nodeinfo.data;
-        nodeInfo.messageID = '4400h';
-        nodeInfo.data = travelSpeed; // ideally update with data readfrom hardware
-        nodeInfo.sequenceNo = 1;
 
-        console.log('\n\n => Setting Travel Speed...\n\n');
-
-    });
-
-    // 2.2  ExecuteList : Message ID = 041Eh
+    // 2.3  ExecuteList : Message ID = 041Eh
     //---------------------------------------------------------------------
-    // respond with message ID : 4400h => Acknowledgemt to the set command
+    // responded to with message ID : 4400h => Acknowledgemt to the set command
     // execute the list as set in nodeInfo.data
 
-    socket.on('041Eh', (nodeInfo) => {
-        var ExecuteList = nodeinfo.data;
-        nodeInfo.messageID = '4400h';
-        nodeInfo.sequenceNo = 1;
+   
 
-        console.log('\n\n =>Executing  List...\n\n');
 
-        nodeInfo.data = ExecuteList; // ideally update with executed list and status ( probably in a loop)
-    });
+//
 
- // 2.3 QueryTravelSpeed : Message ID = 240Ah
-    //----------------------------------------------------
-    // Respond with message ID : 440Ah => ReportTravelSpeed
-    socket.on('240Ah', (nodeInfo) => {
-    // log to console -> can also log to file
-    console.log(`\n\n =>  Query of Travel Speed received  from ${nodeInfo.sender.name}!`);
-    console.log(`\null => sending Travel Speed data to ${nodeInfo.sender.name}...`); 
 
-    // get Global Pose data from hardware. Here we use dummy data    
-        var LPoseData = {
-            "Timestamp": Date.now(),
-            "x": 15,
-            "y": -25,
-            "r": 20.5,
-            "speed": 1.3
-        };
-    // Format the packet to send  
-        nodeInfo.messageID = '440Ah';
-        nodeInfo.data = LPoseData;
-        nodeInfo.sequenceNo = 1;
-    // send the response -> this block of code must be in a function   
-        nodeInfo.recipient = nodeInfo.sender;
-        nodeInfo.sender = me;
-        nodeInfo.timeStamp = Date.now();
-        socket.emit(nodeInfo.messageID, nodeInfo, (ack) => { //socket io emit block
-            if (ack.recipient === 'undefined') {
-                console.log('recipient node did not respond!');
-            } else {
+//-------------------------------------------------------------------------------------------
+//                          Tester code for Local path Segment
+//-------------------------------------------------------------------------------------------
+       var messageID,data,recipientID,sequence;   
 
-                console.log('\n\n => ack :->  ', JSON.stringify(ack, null, 4));
-            }
-        });//end of socket io emit block
-    });
+// Waiting for the connection to be established and stable (5second with the setTimeout function)
+setTimeout(()=> {
+  console.log(" *- Starting the Test... -*")
+ //
+ //1.  request map from the vector knowledge store
+      //  1.1 initialize recipient and command
+        messageID = '2A23h';
+        data = {};
+        recipientID = 61;
+        sequence = 1;
 
-});// end of the connection estalished block of code
+        // 1.2.Checking if recipient node is connected   
+        var destNodeInfo = systemTree.filter((node) => {
+            return node.id === recipientID;
+        });
+
+ if (destNodeInfo.length === 0) { // if not connected
+            console.log('recipient node not connected to the G-Bat Network!');
+        } else { // if connected
+            // 1.3. Formatting the packet to be sent
+            var nodeInfo = {
+                messageID: messageID,
+                sender: me,
+                recipient: destNodeInfo[0],
+                data: data,
+                sequenceNo: sequence
+            };
+           // console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
+            //1.4 sending the message
+            console.log(`\n\n -> Sending ${nodeInfo.messageID} command to ${nodeInfo.recipient.name}....`);
+            socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
+                if (ack.recipient === 'undefined') {
+                    console.log('recipient node did not respond!');
+                } else {
+            // 3.5 getting the acknowledgement and logging it to console
+                    console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
+                }
+            });
+        }
+
+ // 2. compute and  get the path segment from the C++ compiled program  Note can be done insi
+var executeList= [
+
+{
+    "Linear_Velocity": 4,
+    "Angular_Velocity": 3.5,
+    "Distance":6.8
+},
+{
+    "Linear_Velocity": 6,
+    "Angular_Velocity": 23.5,
+    "Distance":3.09
+},
+{
+    "Linear_Velocity": 2.5,
+    "Angular_Velocity": 12.9,
+    "Distance":10.6
+},
+{
+    "Linear_Velocity": 1.23,
+    "Angular_Velocity": 13.5,
+    "Distance":16.3
+},
+{
+    "Linear_Velocity": 4.2,
+    "Angular_Velocity": 3.5,
+    "Distance":60
+},
+];
+
+
+  // 3 Send the ExecuteList to the Local Vector driver : Message ID = 041Eh 
+  //3.1 Initialise the message to be sent
+        messageID = '041Eh';
+        data = executeList;
+        recipientID = 44;
+        sequence = 1;
+
+   // 3.2.Checking if recipient node is connected   
+        var destNodeInfo = systemTree.filter((node) => {
+            return node.id === recipientID;
+        });
+
+ if (destNodeInfo.length === 0) { // if not connected
+            console.log('recipient node not connected to the G-Bat Network!');
+        } else { // if connected
+            // 3.3. Formatting the packet to be sent
+            var nodeInfo = {
+                messageID: messageID,
+                sender: me,
+                recipient: destNodeInfo[0],
+                data: data,
+                sequenceNo: sequence
+            };
+            console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
+            //3.4 sending the message
+            console.log(`\n\n -> Sending ${nodeInfo.messageID} command to ${nodeInfo.recipient.name}....`);
+            socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
+                if (ack.recipient === 'undefined') {
+                    console.log('recipient node did not respond!');
+                } else {
+            // 3.5 getting the acknowledgement and logging it to console
+                    console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
+                }
+            });
+        }
+
+
+},5000);

@@ -1,6 +1,7 @@
+const moment = require('moment');
+const io = require('socket.io-client');
+const socket = io.connect('communicator.local:3000', { reconnect: true });  // replaced the ip address 
 
-const io = require("socket.io-client")
-const socket = io.connect('http://146.64.244.135:3000', { reconnect: true });
 
 // Component  IDs (For test purposes)
 //=================================

@@ -14,7 +14,9 @@
 14. Global Pose Sensor (ID 38)/node_modules/
 15. Global Vector Driver (ID 34)/node_modules/
 16. Global Waypoint Driver (ID 45)/node_modules/
-17. Local Vector Driver (ID 44)/node_modules/
+17  Local Vector Driver (ID 44)/node_modules/
 18. Mission Planner/node_modules/
 19. Planner/node_modules/
 20. Tester/node_modules/
+7. Local Path Segment Driver (ID 48)/node_modules/
+17. Local Vector Driver (ID 44)/node_modules/

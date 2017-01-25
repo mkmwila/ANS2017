@@ -12,6 +12,9 @@
     Project : G-Bat Autonomous Navigation System
     Date  : 10-Jan-2017
     ==========================================================================*/
+const moment = require('moment');
+const io = require('socket.io-client');
+const socket = io.connect('communicator.local:3000', { reconnect: true });  // replaced the ip address 
 
    var me = {
     id: 50,
