@@ -14,7 +14,7 @@
     ==========================================================================*/
 const moment = require('moment');
 const io = require('socket.io-client');
-const socket = io.connect('C6-MiFi.:3000', { reconnect: true });  // replaced the ip address 
+const socket = io.connect('http://C6-MiFi:3000', { reconnect: true });  // replaced the ip address 
 
    var me = {
     id: 40,
