@@ -17,7 +17,7 @@
     Date  : 10-Jan-2017
     ==========================================================================*/
 const io = require('socket.io-client');
-const socket = io.connect('http://146.64.244.135:3000', { reconnect: true });  // replaced the ip address 
+const socket = io.connect('C6-MiFi.:3000', { reconnect: true });  // replaced the ip address 
 
 var me = {
     id: 41,

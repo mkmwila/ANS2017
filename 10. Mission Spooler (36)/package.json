@@ -1,7 +1,7 @@
 {
   "name": "mission-spooler",
   "version": "1.0.0",
-  "description": "",
+  "description": "Autonomous Navigation Mission Spooler in Node GS",
   "main": "mission-spooler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

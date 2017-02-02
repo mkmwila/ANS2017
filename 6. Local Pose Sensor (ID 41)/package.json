@@ -1,7 +1,7 @@
 {
   "name": "local-pose-sensor",
   "version": "1.0.0",
-  "description": "",
+  "description": "Local Pose Sensor in Node.js",
   "main": "localPoseSensor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

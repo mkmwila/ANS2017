@@ -1,7 +1,7 @@
 {
   "name": "reflexive-driver",
   "version": "1.0.0",
-  "description": "",
+  "description": "Reflexive Driver in Node.js",
   "main": "reflexive-driver.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

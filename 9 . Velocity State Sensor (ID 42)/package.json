@@ -1,8 +1,8 @@
 {
-  "name": "system-commander",
+  "name": "velocity-state-sensor",
   "version": "1.0.0",
-  "description": "",
-  "main": "system-commander.js",
+  "description": "G-BAT Velocity Stat Sensor in Node.js",
+  "main": "velocityState-sensor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,7 +1,7 @@
 {
-  "name": "global vector driver",
+  "name": "global-vector-driver",
   "version": "1.0.0",
-  "description": "",
+  "description": " Global Vector Driver in Node.js",
   "main": "globalVector-driver.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

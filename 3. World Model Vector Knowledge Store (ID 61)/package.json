@@ -1,7 +1,7 @@
 {
-  "name": "system-commander",
+  "name": "world-knowledge-vector-store",
   "version": "1.0.0",
-  "description": "",
+  "description": " G-Bat World Model Store in Node.js",
   "main": "system-commander.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
