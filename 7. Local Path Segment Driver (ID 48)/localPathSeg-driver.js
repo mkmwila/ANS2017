@@ -30,6 +30,8 @@ var systemTree = [me];
 
 var mapData = {};
 
+var ExecuteList = {};
+
 var Map = { TimeStamp: 15488843, currentPosition: [1, 2], Destination: [58, -25], from: 'WorldModel' };
 
 console.log('\n\n***** Local Path Segment Driver is Running! *****\n')
@@ -80,17 +82,17 @@ socket.on('connect', () => { // begining of the connection estalished block of c
         mapData = nodeInfo.data[0];
         console.log('\n\n => Received  Map data => ', JSON.stringify(mapData, null, 4));
         // retrieve the payload and process it
-      //  mapData = JSON.stringify(Map, null, 4);
-        var  mapDataStr = JSON.stringify(mapData);
+        //  mapData = JSON.stringify(Map, null, 4);
+        var mapDataStr = JSON.stringify(mapData);
 
 
         // sending the map to the C++ compiled code
         //-----------------------------------------
-        Planner.stdin.write(mapDataStr+'\n' );
-       
+        Planner.stdin.write(mapDataStr + '\n');
+
 
         // console.log('\n\n We sent data in the format of ', typeof (mapDataStr));
-         console.log(`\n => its length is : ${mapDataStr.length}`);
+        console.log(`\n => its length is : ${mapDataStr.length}`);
 
         // console.log(`\n\n -> The data is ${mapDataStr}`);
 
@@ -101,29 +103,99 @@ socket.on('connect', () => { // begining of the connection estalished block of c
         Planner.stdout.on('data', function (data) {
 
 
-            // the data is in the hex format => convert it to string!
-           // myData = data.toString();
+            // 1.the data is in the hex format => convert it to string!
+            // myData = data.toString();
             myData = data;
 
             console.log('Received Data from c++ => ' + myData);
             console.log('myData is of type ' + typeof (myData));
             if (typeof (myData !== 'undefined')) {
-                // convert the JSON format to an object
+                //3.  convert the JSON format to an object
                 myObject = JSON.parse(myData);
+                executeList = myObject.Data;
                 // test the object
-                console.log('Source: ' + myObject.name);
-                console.log('Data[3]: ' + myObject.Data[3]);
+                console.log('\n => sender : ' + myObject.name);
+                console.log(` The Execute List is -> : ${executeList}`);
+
+                // dummy
+    //             executeList = [
+
+    //     {
+    //         "Linear_Velocity": 4,
+    //         "Angular_Velocity": 3.5,
+    //         "Distance": 6.8
+    //     },
+    //     {
+    //         "Linear_Velocity": 6,
+    //         "Angular_Velocity": 23.5,
+    //         "Distance": 3.09
+    //     },
+    //     {
+    //         "Linear_Velocity": 2.5,
+    //         "Angular_Velocity": 12.9,
+    //         "Distance": 10.6
+    //     },
+    //     {
+    //         "Linear_Velocity": 1.23,
+    //         "Angular_Velocity": 13.5,
+    //         "Distance": 16.3
+    //     },
+    //     {
+    //         "Linear_Velocity": 4.2,
+    //         "Angular_Velocity": 3.5,
+    //         "Distance": 60
+    //     },
+    // ];
+
+
+                // 3 Send the ExecuteList to the Local Vector driver : Message ID = 041Eh 
+                //3.1 Initialise the message to be sent
+                messageID = '041Eh';
+                data = executeList;
+                recipientID = 44;
+                sequence = 1;
+
+                // 3.2.Checking if recipient node is connected   
+                var destNodeInfo = systemTree.filter((node) => {
+                    return node.id === recipientID;
+                });
+
+                if (destNodeInfo.length === 0) { // if not connected
+                    console.log('recipient node not connected to the G-Bat Network!');
+                } else { // if connected
+                    // 3.3. Formatting the packet to be sent
+                    var nodeInfo = {
+                        messageID: messageID,
+                        sender: me,
+                        recipient: destNodeInfo[0],
+                        data: data,
+                        sequenceNo: sequence
+                    };
+                    console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
+                    //3.4 sending the message
+                    console.log(`\n\n -> Sending ${nodeInfo.messageID} command to ${nodeInfo.recipient.name}....`);
+                    socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
+                        if (ack.recipient === 'undefined') {
+                            console.log('recipient node did not respond!');
+                        } else {
+                            // 3.5 getting the acknowledgement and logging it to console
+                            console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
+                        }
+                    });
+                }
+
+
             }
 
         });
 
-        // when data comes from the child process on stderr
-        // used here for debugging purposes
-        //-------------------------------------------------
-        Planner.stderr.on('data', function (data) {
+        // // when data comes from the child process on stderr
+        // // used here for debugging purposes
+        // //-------------------------------------------------
+        // Planner.stderr.on('data', function (data) {
 
-            console.log('Data received inside the c++ code => ' + data);
-        });
+        //     console.log('Data received inside the c++ code => ' + data);
+        // });
 
 
         // format the acknowlegemet message
@@ -245,71 +317,9 @@ setTimeout(() => {
     }
 
     // 2. compute and  get the path segment from the C++ compiled program  Note can be done insi
-    var executeList = [
-
-        {
-            "Linear_Velocity": 4,
-            "Angular_Velocity": 3.5,
-            "Distance": 6.8
-        },
-        {
-            "Linear_Velocity": 6,
-            "Angular_Velocity": 23.5,
-            "Distance": 3.09
-        },
-        {
-            "Linear_Velocity": 2.5,
-            "Angular_Velocity": 12.9,
-            "Distance": 10.6
-        },
-        {
-            "Linear_Velocity": 1.23,
-            "Angular_Velocity": 13.5,
-            "Distance": 16.3
-        },
-        {
-            "Linear_Velocity": 4.2,
-            "Angular_Velocity": 3.5,
-            "Distance": 60
-        },
-    ];
+    
 
 
-    // 3 Send the ExecuteList to the Local Vector driver : Message ID = 041Eh 
-    //3.1 Initialise the message to be sent
-    messageID = '041Eh';
-    data = executeList;
-    recipientID = 44;
-    sequence = 1;
-
-    // 3.2.Checking if recipient node is connected   
-    var destNodeInfo = systemTree.filter((node) => {
-        return node.id === recipientID;
-    });
-
-    if (destNodeInfo.length === 0) { // if not connected
-        console.log('recipient node not connected to the G-Bat Network!');
-    } else { // if connected
-        // 3.3. Formatting the packet to be sent
-        var nodeInfo = {
-            messageID: messageID,
-            sender: me,
-            recipient: destNodeInfo[0],
-            data: data,
-            sequenceNo: sequence
-        };
-        console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
-        //3.4 sending the message
-        console.log(`\n\n -> Sending ${nodeInfo.messageID} command to ${nodeInfo.recipient.name}....`);
-        socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
-            if (ack.recipient === 'undefined') {
-                console.log('recipient node did not respond!');
-            } else {
-                // 3.5 getting the acknowledgement and logging it to console
-                console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
-            }
-        });
-    }
 
 
 }, 3000);
