@@ -819,6 +819,36 @@ io.on('connection', (socket) => { // socket io connection
     clearTimeout(nack);
   });
 
+  // 2.6 ReportLocalPose : Message ID = 4403h
+  //-------------------------------------------
+  socket.on('4403h', (nodeInfo, acknowledge) => {
+    console.log(`\n => ${nodeInfo.sender.name} is reporting Local pose to ${nodeInfo.recipient.name}`);
+
+    // NB. Refactoring : The following block of code must be a function
+    // as it appears in every message event
+
+    var ack = {
+      command: '4403h',
+      sender: nodeInfo.sender.name,
+      sequence: nodeInfo.sequence
+    };
+
+    // checking if recipient is still connected 
+    var sentTo = systemTree.filter((node) => {
+      return node.name === nodeInfo.recipient.name;
+    });
+
+    // retrieving its socket id  
+    var destination = sentTo[0].socketID;
+
+    //Formatting 
+    ack.recipient = sentTo[0].name;
+    ack.timestamp = moment().valueOf();
+    var nack = setTimeout(() => { console.log('Timed out!') }, 1000); // do something about this
+    socket.broadcast.to(destination).emit(nodeInfo.messageID, nodeInfo);
+    acknowledge(ack);
+    clearTimeout(nack);
+  });
   //=========================================================================================
   //                            4. All Drivers ( Common services)
   //=========================================================================================

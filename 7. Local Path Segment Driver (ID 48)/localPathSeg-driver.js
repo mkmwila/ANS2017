@@ -15,7 +15,7 @@
 
 const moment = require('moment');
 const io = require('socket.io-client');
-const socket = io.connect('http://localhost:3000', { reconnect: true });  // replaced the ip address 
+const socket = io.connect('http://192.168.0.1:3000', { reconnect: true });  // replaced the ip address 
 const spawn = require('child_process').spawn;
 const pathPlanning = './path.exe';
 var Planner = spawn(pathPlanning);
@@ -92,10 +92,35 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 
 
         // console.log('\n\n We sent data in the format of ', typeof (mapDataStr));
-        console.log(`\n => its length is : ${mapDataStr.length}`);
+        //console.log(`\n => its length is : ${mapDataStr.length}`);
 
         // console.log(`\n\n -> The data is ${mapDataStr}`);
 
+      
+        // when data comes from the child process on stderr
+        // used here for debugging purposes
+        //-------------------------------------------------
+        Planner.stderr.on('data', function (data) {
+
+            console.log('Data received inside the c++ code => ' + data);
+        });
+/* 
+
+        // Simulate entering data for gets() after 1 second
+        setTimeout(function () {
+            console.log('sending Data to the path planner c++ executable program (planner.exe) ....');
+            Planner.stdin.write(Map);
+            Planner.stdin.write('\n');
+        }, 1000);
+
+        socket.on('4A23h', (nodeInfo) => {  // Receiving the map block of code
+            console.log('\n\n => Received  Map data => ', JSON.stringify(nodeInfo.data, null, 4));
+            // retrieve the payload and process it
+            mapData = JSON.stringify(Map, null, 4);
+            // mapData = JSON.stringify(nodeInfo.data, null, 4);
+        });
+
+*/
 
         // when data comes from the child process on stdout
         //-------------------------------------------------
@@ -104,55 +129,22 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 
 
             // 1.the data is in the hex format => convert it to string!
-            // myData = data.toString();
-            myData = data;
+            myData = data.toString();
+            //myData = data;
 
-            console.log('Received Data from c++ => ' + myData);
-            console.log('myData is of type ' + typeof (myData));
+            console.log('Received Data from c++ ...\n\n\n =>   ' + myData);
+            //console.log('\n\n\n myData is of type ' + typeof (myData));
             if (typeof (myData !== 'undefined')) {
                 //3.  convert the JSON format to an object
                 myObject = JSON.parse(myData);
-                executeList = myObject.Data;
-                // test the object
-                console.log('\n => sender : ' + myObject.name);
-                console.log(` The Execute List is -> : ${executeList}`);
-
-                // dummy
-    //             executeList = [
-
-    //     {
-    //         "Linear_Velocity": 4,
-    //         "Angular_Velocity": 3.5,
-    //         "Distance": 6.8
-    //     },
-    //     {
-    //         "Linear_Velocity": 6,
-    //         "Angular_Velocity": 23.5,
-    //         "Distance": 3.09
-    //     },
-    //     {
-    //         "Linear_Velocity": 2.5,
-    //         "Angular_Velocity": 12.9,
-    //         "Distance": 10.6
-    //     },
-    //     {
-    //         "Linear_Velocity": 1.23,
-    //         "Angular_Velocity": 13.5,
-    //         "Distance": 16.3
-    //     },
-    //     {
-    //         "Linear_Velocity": 4.2,
-    //         "Angular_Velocity": 3.5,
-    //         "Distance": 60
-    //     },
-    // ];
-
-
+                //executeList = myObject.Data;
+                executeList = myData;
+                
                 // 3 Send the ExecuteList to the Local Vector driver : Message ID = 041Eh 
                 //3.1 Initialise the message to be sent
                 messageID = '041Eh';
                 data = executeList;
-                recipientID = 44;
+                recipientID = 33;
                 sequence = 1;
 
                 // 3.2.Checking if recipient node is connected   
@@ -171,9 +163,9 @@ socket.on('connect', () => { // begining of the connection estalished block of c
                         data: data,
                         sequenceNo: sequence
                     };
-                    console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
+                   // console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
                     //3.4 sending the message
-                    console.log(`\n\n -> Sending ${nodeInfo.messageID} command to ${nodeInfo.recipient.name}....`);
+                    console.log(`\n\n -> Sending the execute command to ${nodeInfo.recipient.name}....`);
                     socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
                         if (ack.recipient === 'undefined') {
                             console.log('recipient node did not respond!');
@@ -277,6 +269,7 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 var messageID, data, recipientID, sequence;
 
 // Waiting for the connection to be established and stable (5second with the setTimeout function)
+ console.log ("Waiting for the connection to be established and stable -> 5 seconds...\n ")
 setTimeout(() => {
     console.log(" *- Starting the Test... -*")
     //
@@ -317,7 +310,7 @@ setTimeout(() => {
     }
 
     // 2. compute and  get the path segment from the C++ compiled program  Note can be done insi
-    
+
 
 
 

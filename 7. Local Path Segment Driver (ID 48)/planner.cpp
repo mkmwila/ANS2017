@@ -25,7 +25,7 @@ int main() {
 // requirements
 //-----------------------------------------------------------------------------------
 
-processed_Data = "{ \"timeStamp\":145879652,\"name\":\"Planner PC\",\"Data\":[1,8,7,9,5]}";
+processed_Data ="{\"Data\":[{\"Distance\":72.8000106811523,\"Linear_Velocity\":11,\"Steering_Angle\":0.0},{\"Distance\":5.19999694824219,\"Linear_Velocity\":10.1666669845581,\"Steering_Angle\":0.0},{\"Distance\":9.84336280822754,\"Linear_Velocity\":10.1666669845581,\"Steering_Angle\":0.100000001490116},{\"Distance\":112.462554931641,\"Linear_Velocity\":11,\"Steering_Angle\":0.0},{\"Distance\":107.262580871582,\"Linear_Velocity\":11,\"Steering_Angle\":0.0}],\"name\":\"Planner PC\",\"timeStamp\":1499773918}";
 
 // Send the result to the Node.js parent process with the 'stdout' event
 //------------------------------------------------------------------------

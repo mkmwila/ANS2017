@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+    <h1>  G-BAT Operator Control Unit (OCU)</h1>
+    <div id="future"></div>
+ <!-- The radio  buttons to select the driving mode 
+     -----------------------------------------------  -->  
+    <form>
+         <fieldset>
+        <legend><h3><p><b><i>G-BAT Drive Mode:</i></b></p></h3></legend>
+        <input type="radio" name="G-batMode" value="Autonomous" checked> Autonomous<br>
+        <input type="radio" name="G-batMode" value="|Remote Controled"> RemoteControlled<br>
+        <input type="radio" name="G-batMode" value="Disabled"> Disabled
+          </fieldset>
+    </form>
+<hr>
+
+<!-- The slider buttons to adjust the wrench effort 
+    ----------------------------------------------- -->
+ <fieldset>
+             
+   <legend> <h3><p><b><i> Wrench Effort Control: </i></b></p></h3></legend>
+    <form id="form" id="Direction_Control">
+        <label for="Dir"> Direction (Stepper Motor) : </label>
+        <input type="range" min="0" max="100" value="0" step="0.1" id="dir" oninput="updateDirection(value)" />
+        <output for="fader" id="dirEffort">100</output>
+    </form>
+    <form id="form" id="Breakd_Control">
+        <label for="Breaks"> Breaks Throttle (Servo1):   </label>
+        <input type="range" min="0" max="100" value="0" step="0.1" id="Breaks" oninput="updateBreaks(value)" />
+        <output for="fader" id="breakEffort">100</output>
+    </form>
+    <form id="form" id="Speed_Control">
+        <label for="Speed">Speed Throttle (Servo2): </label>
+        <input type="range" min="0" max="100" value="0" step="0.1" id="speed" oninput="updateSpeed(value)" />
+        <output for="fader" id="speedEffort">100</output>
+    </form>
+
+  </fieldset>
+<!-- The socket.io connection
+     -------------------------- -->
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        var socket = io();
+        socket.on('connect', function(data) {
+            socket.emit('chat message', 'Hello World from OCU');
+        });
+
+        socket.on('messages', function(data) {
+            alert(data);
+        });
+        // Function to handle the sliders's actions
+        //------------------------------------------
+        function updateBreaks(effort) {
+            document.querySelector('#breakEffort').value = effort;
+             socket.emit('breaks', effort );
+        }
+
+        function updateSpeed(effort) {
+            document.querySelector('#speedEffort').value = effort;
+              socket.emit('speed', effort );
+        }
+
+        function updateDirection(effort) {
+            document.querySelector('#dirEffort').value = effort;
+              socket.emit('dir', effort );
+        }
+    </script>
+</body>
+
+</html>

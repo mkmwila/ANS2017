@@ -1,6 +1,6 @@
 const moment = require('moment');
 const io = require('socket.io-client');
-const socket = io.connect('http://C6-MiFi:3000', { reconnect: true });  // replaced the ip address 
+const socket = io.connect('http://localhost:3000', { reconnect: true });  // replaced the ip address 
 
 
 // Component  IDs (For test purposes)
@@ -29,8 +29,8 @@ const socket = io.connect('http://C6-MiFi:3000', { reconnect: true });  // repla
 */
 
 var me = {
-    id: 33,
-    name: 'Primitive Driver',
+    id: 41,
+    name: 'Local Pose Sensor',
 };
 var systemTree = [me];
 
@@ -61,11 +61,11 @@ socket.on('connect', () => {
 
     });
 
-    // Receive Global Pose : Message ID = 4402h
+    // Receive Local Pose : Message ID = 4403h
     //---------------------------------------------------------------------
     // respond with message ID : 4400h => Acknowledgemt to the Data received
-    socket.on('4402h', (nodeInfo) => {  
-        console.log('\n\n => Received  Global Pose Data... => ', JSON.stringify(nodeInfo, null, 4));
+    socket.on('4405h', (nodeInfo) => {  
+        console.log('\n\n => Received  Local Pose Data... => ', JSON.stringify(nodeInfo, null, 4));
         // retrieve the payload and process it
 
         // format the acknowlegemet message
@@ -120,9 +120,53 @@ socket.on('connect', () => {
     console.log('\n\n**** Starting the JAUS  Tester ....... ****\n\n');
     setTimeout(() => {
         // initialising the message  to be sent
-        var messageID = '0A20h';
+        var messageID = '2403h';
         var data = {};
-        var recipientID = 61;
+        var recipientID = 41;
+        var sequence = 1;
+
+        // Checking if recipient node is connected   
+        var destNodeInfo = systemTree.filter((node) => {
+            return node.id === recipientID;
+        });
+
+        console.log(' dest nodeInfo', destNodeInfo);
+        if (destNodeInfo.length === 0) { // if not connected
+            console.log('recipient node not connected to the G-Bat Network!');
+        } else { // if connected
+            // 1. Formatting the packet to be sent
+            var nodeInfo = {
+                messageID: messageID,
+                sender: me,
+                recipient: destNodeInfo[0],
+                data: data,
+                sequenceNo: sequence
+            };
+            console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
+            console.log(`\n\n -> Sending ${nodeInfo.messageID} command to ${nodeInfo.recipient.name}....`);
+            socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
+                if (ack.recipient === 'undefined') {
+                    console.log('recipient node did not respond!');
+                } else {
+
+                    console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
+                }
+            });
+        }
+    }, 100);
+
+
+
+
+// =====================
+//         TESTER CODE
+// =====================
+
+    setTimeout(() => {
+        // initialising the message  to be sent
+        var messageID = '2405h';
+        var data = {};
+        var recipientID = 33;
         var sequence = 1;
 
         // Checking if recipient node is connected   

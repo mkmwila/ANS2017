@@ -16,7 +16,7 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <fstream>
-#include "json.hpp"
+#include <json.hpp>
 #include <sstream>
 #include <chrono>
 
@@ -25,8 +25,8 @@ using namespace std::chrono;
 using namespace nlohmann;
 
 
-const int n=16; //initialisation of horizontal size of the map
-const int m=16; //initialisation of vertical size size of the map
+const int n=24; //initialisation of horizontal size of the map
+const int m=12; //initialisation of vertical size size of the map
 static int trav_map[n][m];
 // if dir==8
 //{
@@ -196,7 +196,7 @@ float *trajectory(int *global_route, float speed_limit, float cell_size, float w
 	int length_route=10; // worst case if distance between waypoints equals wheelbase - see waypoint calc below
 	int i;
 	int max_waypoint_index=((length_route*cell_size)/wheel_base)+3;
-	double waypoint[max_waypoint_index][2]={(*(global_route+2)+0.5)*cell_size, (*(global_route+3)+0.5)*cell_size}; // Size of waypoint =20 based on max waypoint index defined above
+	float waypoint[max_waypoint_index][2]={(*(global_route+2)+0.5)*cell_size, (*(global_route+3)+0.5)*cell_size}; // Size of waypoint =20 based on max waypoint index defined above
 	int length_waypoint=20; // from waypoint initialisation on line above
 	int reset_1=1; 
 	int waypoint_index=0; // tracks waypoint index 
@@ -265,8 +265,8 @@ looking 2 waypoints ahead implies we consider the next 7 to 9 waypoints dependin
 		else
 		{
 				float waypoint0[2]={current_x,current_y}; // current absolute position
-				double waypoint_grid[2]={(*(global_route+i)+0.5)*cell_size,(*(global_route+i+1)+0.5)*cell_size}; //next grid point absolute position
-				double waypoint_grid_next[2]={(*(global_route+i+2)+0.5)*cell_size,(*(global_route+i+3)+0.5)*cell_size}; // third grid point absolute position
+				float waypoint_grid[2]={(*(global_route+i)+0.5)*cell_size,(*(global_route+i+1)+0.5)*cell_size}; //next grid point absolute position
+				float waypoint_grid_next[2]={(*(global_route+i+2)+0.5)*cell_size,(*(global_route+i+3)+0.5)*cell_size}; // third grid point absolute position
 			
 				float vect_a1=(waypoint_grid[0]-waypoint0[0]); //Used for cross product - x component of vector A (current to grid)
 				float vect_a2=(waypoint_grid[1]-waypoint0[1]);
