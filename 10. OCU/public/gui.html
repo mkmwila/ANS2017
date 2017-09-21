@@ -128,7 +128,40 @@
      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 
     <script>
-      var socket = new io.Socket(null, {port: 3000, rememberTransport: false});
+      // need to connect to the G-BAT network
+      var me = {
+          id: 239,
+          name: 'OCU Graphical User Interface'
+      };
+      var socket = io('http://146.64.244.203:3000');
+      socket.on('connect',function(){
+        console.log(socket.id); // 'G5p5...'
+        console.log('\n\n => Connection to the G-Bat Network has been established!!\n\n');
+        // console.log(sensorIo);
+
+        socket.on('register', (regData, identify) => {
+            identify(me);
+        });
+        socket.on('registration', (regInfo) => {
+            console.log(`\n => A ${regInfo.name} has connected to the G-Bat Network!`);
+        });
+
+        socket.on('deregistration', (regInfo) => {
+            console.log(`\n => A ${regInfo.name} has disconnected from the G-Bat Network!`);
+        });
+
+        socket.on('systemUpdate', (update) => {
+
+            systemTree = update;
+            console.log('\n\n => Connected Nodes: ', JSON.stringify(systemTree, null, 4));
+
+        });
+        // Hanling disconnection
+        //----------------------
+        socket.on('disconnect', () => {
+            console.log('Connection to the G-Bat network has been terminated!');
+        });
+      });
       $('#start').bind('click',function(){
         console.log('start the mission');
           socket.emit('start','start the mission');
@@ -153,4 +186,4 @@
     </script>
   </body>
 
-</html>
+</ht
