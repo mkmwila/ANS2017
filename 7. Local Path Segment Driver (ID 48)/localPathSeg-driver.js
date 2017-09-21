@@ -15,7 +15,7 @@
 
 const moment = require('moment');
 const io = require('socket.io-client');
-const socket = io.connect('http://192.168.0.1:3000', { reconnect: true });  // replaced the ip address 
+const socket = io.connect('http://146.64.244.203:3000', { reconnect: true });  // replaced the ip address 
 const spawn = require('child_process').spawn;
 const pathPlanning = './path.exe';
 var Planner = spawn(pathPlanning);
@@ -144,8 +144,9 @@ socket.on('connect', () => { // begining of the connection estalished block of c
                 //3.1 Initialise the message to be sent
                 messageID = '041Eh';
                 data = executeList;
-                recipientID = 33;
+                recipientID = 43;
                 sequence = 1;
+
 
                 // 3.2.Checking if recipient node is connected   
                 var destNodeInfo = systemTree.filter((node) => {
