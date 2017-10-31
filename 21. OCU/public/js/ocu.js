@@ -47,15 +47,23 @@
 
  // load all the mission from that mongoDB database
 
- $.getJSON('/ocu/missions',function(missons){
+ $.getJSON('/ocu/missions',function(missions){
     //get all the missions
     console.log('Missions',missions);
     var mission_names = [];
-    missons.forEach(function(Amission){
-      mission_names.push(Amission.mission);
+    missions.forEach(function(Amission){
+      mission_names.push(Amission.name);
     });
     mission_names.sort(); // sort all missions by name
     console.log('All Missions created ...', mission_names);
+
+     var list_of_missions = '<option selected="selected" value= "0">-select Mission -</option> ';
+    // add all the missions to the dropdownlist
+    for(i =0 ; i< mission_names.length;i++){
+      list_of_missions+= "<option value='"+ i + "'>" + mission_names[i] + "</option>"
+    }
+     // render to gui
+      $('#mission_name').html(list_of_missions)
 
  })
 
