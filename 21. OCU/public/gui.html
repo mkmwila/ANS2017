@@ -65,19 +65,16 @@
       	<class="form-inline" role="form">
       	<select id="mission_name"  class="btn btn-primary dropdown-toggle "> </select>
        <input  class="btn btn-success btn-sg" type="button" value="Start Mission"  id='start_mission'>
+       <div class="col-md-2 col-sm-2 mb-2">
+           <button class="btn btn-info" id="load" data-toggle="modal" data-target="#createMission">Create Mission</button>
+       </div>
      </div>
      <br>
      <div class="row">
 
-         <div class="col-md-2 col-sm-2 mb-2">
-             <button class="btn btn-info" id="load">Load Map</button>
-         </div>
 
-         <div class="col-md-2 col-sm-2 mb-2">
-             <button class="btn btn-primary" id='start'>Start Mission</button>
-         </div>
 
-         <div class="col-md-2 col-sm-2 mb-2">
+         <div class="col-md-3 col-sm-2 mb-3">
              <button class="btn btn-danger" id='stop'>Stop Mission</button>
          </div>
 
@@ -97,33 +94,37 @@
 
         <!-- Portfolio Item Row -->
         <div class="row">
-
-            <div class="col-md-8">
+          <div class="col-md-8">
                 <img class="img-fluid" src="http://placehold.it/750x500" alt="">
             </div>
-
-
-            <div class="col-md-4">
-                <h3 class="my-3">Project Description</h3>
-                <p>Node.js implementation of JAUS in Autonomous Navigation Vehicle
-                </p>
-                <h3 class="my-3">Project Details</h3>
-
-            </div>
-
+            <h3 class="my-4">Related Projects</h3>
         </div>
-        <!-- /.row -->
-
-        <!-- Related Projects Row -->
-        <h3 class="my-4">Related Projects</h3>
 
 
-        <!-- /.row -->
+<div id="createMission" class="modal fade" role="dialog">
+<div class="modal-dialog">
+
+  <!-- Modal content-->
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal"></button>
+      <h4 class="modal-title">Create Mission</h4>
+    </div>
+    <div class="modal-body">
+      <label>Mission Name</label>
+      <input id='mission_name'></input>
+      <br>
+      <label>Description</label>
+      <input id='description'></input>
 
     </div>
-    <!-- /.container -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+  </div>
 
-    <!-- Footer -->
+</div>
+</div>
 
 
     <!-- Bootstrap core JavaScript -->
