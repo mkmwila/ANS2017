@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
+var OcuUtil = require('./routes/ocuUtility.js')
 
 // view engine setup
 var engine = require('consolidate');
@@ -21,6 +22,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/',function(req,res){res.render('public/gui.html')});
+app.get('/ocu/missions/',function(req,res){
+    OcuUtil.getAllMissions(function(err,missions){
+      if(err){
+        res.send('missions Error'+err);
+      }
+       res.send(missions)
+    })
+})
 
 var server = app.listen(9000,function(){
   var port = server.address().port;

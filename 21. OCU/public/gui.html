@@ -15,6 +15,9 @@
 
     <!-- Custom styles for this template -->
     <link href="css/portfolio-item.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </head>
 
@@ -55,6 +58,42 @@
         <h1 class="my-4">G-BAT Operator Control Unit
             <small> (OCU)</small>
         </h1>
+        <div class="container">
+  <p>Use the .dropdown-menu class to Select a Mission.</p>
+    <div id="nav_wrapper">
+
+      	<class="form-inline" role="form">
+      	<select id="mission_name"  class="btn btn-primary dropdown-toggle "> </select>
+       <input  class="btn btn-success btn-sg" type="button" value="Start Mission"  id='start_mission'>
+     </div>
+     <br>
+     <div class="row">
+
+         <div class="col-md-2 col-sm-2 mb-2">
+             <button class="btn btn-info" id="load">Load Map</button>
+         </div>
+
+         <div class="col-md-2 col-sm-2 mb-2">
+             <button class="btn btn-primary" id='start'>Start Mission</button>
+         </div>
+
+         <div class="col-md-2 col-sm-2 mb-2">
+             <button class="btn btn-danger" id='stop'>Stop Mission</button>
+         </div>
+
+         <div class="col-md-2 col-sm-2 mb-2">
+             <button class="btn btn-warning" id='pause'>Pause Mission</button>
+         </div>
+
+         <div class="col-md-2 col-sm-2 mb-2">
+             <button class="btn btn-info" id='resume'>Resume Mission</button>
+         </div>
+         <div class="col-md-2 col-sm-2 mb-2">
+             <button class="btn btn-default" id='manual'>Manual Override</button>
+         </div>
+
+
+     </div>
 
         <!-- Portfolio Item Row -->
         <div class="row">
@@ -63,18 +102,13 @@
                 <img class="img-fluid" src="http://placehold.it/750x500" alt="">
             </div>
 
+
             <div class="col-md-4">
                 <h3 class="my-3">Project Description</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis
-                    enim.
+                <p>Node.js implementation of JAUS in Autonomous Navigation Vehicle
                 </p>
                 <h3 class="my-3">Project Details</h3>
-                <ul>
-                    <li>Lorem Ipsum</li>
-                    <li>Dolor Sit Amet</li>
-                    <li>Consectetur</li>
-                    <li>Adipiscing Elit</li>
-                </ul>
+
             </div>
 
         </div>
@@ -83,45 +117,14 @@
         <!-- Related Projects Row -->
         <h3 class="my-4">Related Projects</h3>
 
-        <div class="row">
 
-            <div class="col-md-2 col-sm-2 mb-2">
-                <button class="btn btn-info" id="load">Load Map</button>
-            </div>
-
-            <div class="col-md-2 col-sm-2 mb-2">
-                <button class="btn btn-primary" id='start'>Start Mission</button>
-            </div>
-
-            <div class="col-md-2 col-sm-2 mb-2">
-                <button class="btn btn-danger" id='stop'>Stop Mission</button>
-            </div>
-
-            <div class="col-md-2 col-sm-2 mb-2">
-                <button class="btn btn-warning" id='pause'>Pause Mission</button>
-            </div>
-
-            <div class="col-md-2 col-sm-2 mb-2">
-                <button class="btn btn-info" id='resume'>Resume Mission</button>
-            </div>
-            <div class="col-md-2 col-sm-2 mb-2">
-                <button class="btn btn-default" id='manual'>Manual Override</button>
-            </div>
-
-
-        </div>
         <!-- /.row -->
 
     </div>
     <!-- /.container -->
 
     <!-- Footer -->
-    <footer class="py-5 bg-dark">
-        <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
-        </div>
-        <!-- /.container -->
-    </footer>
+
 
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>

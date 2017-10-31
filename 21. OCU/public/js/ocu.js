@@ -14,7 +14,7 @@
  var systemTree = [me];
 
 
- var socket = io('http://146.64.244.203:3000');
+ var socket = io('http://localhost:3000'); // ip address of the G-Bat network
 
  socket.on('connect', function() {
      console.log(socket.id); // 'G5p5...'
@@ -45,14 +45,28 @@
      });
  });
 
+ // load all the mission from that mongoDB database
+
+ $.getJSON('/ocu/missions',function(missons){
+    //get all the missions
+    console.log('Missions',missions);
+    var mission_names = [];
+    missons.forEach(function(Amission){
+      mission_names.push(Amission.mission);
+    });
+    mission_names.sort(); // sort all missions by name
+    console.log('All Missions created ...', mission_names);
+
+ })
+
  // =====================================================================================
  //              Load Mission to the World Model Spooler
  //======================================================================================
- // Send the command  on button click to the system commander and it must save it to the 
+ // Send the command  on button click to the system commander and it must save it to the
  // mongo dB
 
  $('#load').bind('click', function() {
-     // Example of map info 
+     // Example of map info
      // Must be read from file (JSON) converted from a Google image
      // Question : How to upload a JPEG file using socket.io?
      var missionInfo = {
@@ -93,10 +107,10 @@
  })
 
  // =====================================================================================
- //             Start the  Mission 
+ //             Start the  Mission
  //======================================================================================
- // Send the command  on button click to the system commander and it must retreave the correct 
- // mission from Mong DB and start the waterfall from driving . if mission id is not given  get 
+ // Send the command  on button click to the system commander and it must retreave the correct
+ // mission from Mong DB and start the waterfall from driving . if mission id is not given  get
  //mission from the last save mission in  mongo dB
 
  $('#start').bind('click', function() {
@@ -106,11 +120,11 @@
          recipient: systemCommander,
          data: {
              id: 001,
-             name: 'Battle of Troy'
+             name: 'Battle of Troy' // crete a mission
          },
          sequenceNo: 1
      }
-     console.log('load the mission');
+     console.log('starting the mission...');
      socket.emit('0E01h', nodeInfo);
  })
 
@@ -130,10 +144,10 @@
  })
 
  // =====================================================================================
- //             Pause  the  Mission 
+ //             Pause  the  Mission
  //======================================================================================
- // Send the command  on button click to the system commander and it mustretreave the correct 
- // mission from Mong DB and start the waterfall from driving 
+ // Send the command  on button click to the system commander and it mustretreave the correct
+ // mission from Mong DB and start the waterfall from driving
  // mongo dB
 
  $('#pause').bind('click', function(e) {
