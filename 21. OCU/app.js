@@ -41,6 +41,23 @@ app.post('/ocu/create/mission/',function(req,res){
   })
 })
 
+// get selectedMissionInfo
+app.get('/ocu/getMissionByName/:missionName',function(req,res){
+  var missionName = req.params.missionName;
+  console.log('selectedMission', missionName);
+  // we need to findOn
+  mongoClient.connect('mongodb://localhost:27017/ocu',function(err,db){
+    db.collection('missions').find({'name':missionName}).toArray(function(err,Amission){
+      console.log('selected mission',Amission);
+      if(err){
+        res.send(err)
+      }else{
+        res.send(Amission)
+      }
+    })
+  })
+})
+
 var server = app.listen(9000,function(){
   var port = server.address().port;
   var host = server.address().address;

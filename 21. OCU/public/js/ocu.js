@@ -79,39 +79,52 @@
  $('#start_mission').bind('click', function() {
     console.log('mission starting');
      // load missionInfo
-    var missionInfo = {
-       from: 'OCU',
-       to: 'Mission Spooler',
-       id: 001, // get missionId from mongoDB
-       name: 'Battle of Troy',
-       destination: {
-           X: 8,
-           y: -13,
-           r: 2.5
-       },
-       map: {
-           rows: 16,
-           columns: 16,
-           gridSize: 32.2,
-           traversability: {}
-       }
+     // get the selected Missiion then call it from the db
+     var selectedMission = $('#mission_name option:selected').text();
+     console.log('Selected mission', selectedMission);
+     // ideally we would want to get the mission by its ID : CONSTAINT ALL MISSION BY NAME
+     $.getJSON('/ocu/getMissionByName/'+selectedMission,function(missionDataInfo){
+        console.log('missionInfo',missionDataInfo);
+        // populate the JSON to be sent via the socket.IO
 
-   };
-   var nodeInfo = {
-       messageID: '0E00h',
-       sender: me,
-       recipient: systemCommander,
-       data: missionInfo,
-       sequenceNo: 1
-   };
-   socket.emit('0E00h', nodeInfo, (ack) => {
-       if (ack.recipient === 'undefined') {
-           console.log('recipient node did not respond!');
-       } else {
-           // 3.5 getting the acknowledgement and logging it to console
-           console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
-       }
-   });
+        var missionInfo = {
+           from: 'OCU',
+           to: 'Mission Spooler',
+           id: missionDataInfo[0]._id, // get missionId from mongoDB
+           name: missionDataInfo[0].name,
+           description: missionDataInfo[0].description,
+           destination: {
+               X: 8,
+               y: -13,
+               r: 2.5
+           },
+           map: {
+               rows: 16,
+               columns: 16,
+               gridSize: 32.2,
+               traversability: {}
+           }
+
+       };
+       var nodeInfo = {
+           messageID: '0E00h',
+           sender: me,
+           recipient: systemCommander,
+           data: missionInfo,
+           sequenceNo: 1
+       };
+       console.log('missionInfo',missionInfo);
+       socket.emit('0E00h', nodeInfo, (ack) => {
+           if (ack.recipient === 'undefined') {
+               console.log('recipient node did not respond!');
+           } else {
+               // 3.5 getting the acknowledgement and logging it to console
+               console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
+           }
+       });
+
+     })
+
 
  })
  $('#postMission').bind('click', function() {
