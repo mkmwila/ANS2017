@@ -67,52 +67,78 @@
 
  })
 
+  // create a mission saves all the results on the database
+
+
  // =====================================================================================
  //              Load Mission to the World Model Spooler
  //======================================================================================
  // Send the command  on button click to the system commander and it must save it to the
  // mongo dB
 
- $('#load').bind('click', function() {
-     // Example of map info
-     // Must be read from file (JSON) converted from a Google image
-     // Question : How to upload a JPEG file using socket.io?
-     var missionInfo = {
-         from: 'OCU',
-         to: 'Mission Spooler',
-         id: 001,
-         name: 'Battle of Troy',
-         destination: {
-             X: 8,
-             y: -13,
-             r: 2.5
-         },
-         map: {
-             rows: 16,
-             columns: 16,
-             gridSize: 32.2,
-             traversability: {}
-         }
+ $('#start_mission').bind('click', function() {
+    console.log('mission starting');
+     // load missionInfo
+    var missionInfo = {
+       from: 'OCU',
+       to: 'Mission Spooler',
+       id: 001, // get missionId from mongoDB
+       name: 'Battle of Troy',
+       destination: {
+           X: 8,
+           y: -13,
+           r: 2.5
+       },
+       map: {
+           rows: 16,
+           columns: 16,
+           gridSize: 32.2,
+           traversability: {}
+       }
 
-     };
-     var nodeInfo = {
-         messageID: '0E00h',
-         sender: me,
-         recipient: systemCommander,
-         data: missionInfo,
-         sequenceNo: 1
-     };
-     socket.emit('0E00h', nodeInfo, (ack) => {
-         if (ack.recipient === 'undefined') {
-             console.log('recipient node did not respond!');
-         } else {
-             // 3.5 getting the acknowledgement and logging it to console
-             console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
-         }
-     });
-     console.log('Load the mission info => ', JSON.stringify(nodeInfo.data, null, 4));
-     // scoket
+   };
+   var nodeInfo = {
+       messageID: '0E00h',
+       sender: me,
+       recipient: systemCommander,
+       data: missionInfo,
+       sequenceNo: 1
+   };
+   socket.emit('0E00h', nodeInfo, (ack) => {
+       if (ack.recipient === 'undefined') {
+           console.log('recipient node did not respond!');
+       } else {
+           // 3.5 getting the acknowledgement and logging it to console
+           console.log('\n\n ack :->  ', JSON.stringify(ack, null, 4));
+       }
+   });
+
  })
+ $('#postMission').bind('click', function() {
+   var missionData  = {
+     'name':document.getElementById('name').value,
+     'description':document.getElementById('description').value
+   }
+   console.log('missionData Object', missionData);
+   $.post('/ocu/create/mission/',missionData);
+   window.location.replace("/");
+   alert('Mission Created', missionData.name)
+
+   // Example of map info
+   // Must be read from file (JSON) converted from a Google image
+   // Question : How to upload a JPEG file using socket.io?
+    /*
+   console.log('Load the mission info => ', JSON.stringify(nodeInfo.data, null, 4));
+   // scoket
+   */
+    // At this point we just creating a new mission
+    console.log('creating a Mission ...');
+
+    //
+
+
+
+ });
 
  // =====================================================================================
  //             Start the  Mission

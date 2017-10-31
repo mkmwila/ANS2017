@@ -6,6 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 var OcuUtil = require('./routes/ocuUtility.js')
+var mongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+
+
 
 // view engine setup
 var engine = require('consolidate');
@@ -29,6 +33,12 @@ app.get('/ocu/missions/',function(req,res){
       }
        res.send(missions)
     })
+})
+app.post('/ocu/create/mission/',function(req,res){
+  // connect to th mongodababase
+  mongoClient.connect('mongodb://localhost:27017/ocu',function(err,db){
+    db.collection('missions').save(req.body);
+  })
 })
 
 var server = app.listen(9000,function(){

@@ -14,8 +14,19 @@ var mongoClient = require('mongodb').MongoClient,
        }else{
          console.log('loading Missions', missions)
           callback(err,missions)
-       }  
+       }
      });
    }
 
+
  });
+
+ exports.createMission = function(req,res){
+   // get mission datat
+   var missionData = req.body;
+   console.log('missionData', missionData);
+    // save the missionDatat on the database
+    db.collection('missions').save(missionData).exec(function(err,results){
+      console.log('mission Created..');
+    });
+ }
