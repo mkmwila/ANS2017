@@ -8,6 +8,19 @@ var app = express();
 var OcuUtil = require('./routes/ocuUtility.js')
 var mongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
+
+// configure file upload on the server
+var storage = multer.diskStorage({
+	destination: function(req, file, callback) {
+		callback(null, './uploads') // destination where the file will be uploaded
+	},
+	filename: function(req, file, callback) {
+		console.log(file)
+		callback(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+	}
+})
 
 
 
@@ -25,7 +38,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/',function(req,res){res.render('public/gui.html')});
+app.get('/ocu/create/mission/',function(req,res){res.render('public/gui.html')});
 app.get('/ocu/missions/',function(req,res){
     OcuUtil.getAllMissions(function(err,missions){
       if(err){
@@ -36,10 +49,18 @@ app.get('/ocu/missions/',function(req,res){
 })
 app.post('/ocu/create/mission/',function(req,res){
   // connect to th mongodababase
+  var upload = multer({
+		storage: storage
+	}).single('userFile')
+	upload(req, res, function(err) {
+		console.log('file uploaded to the database')
+	})
   mongoClient.connect('mongodb://localhost:27017/ocu',function(err,db){
     db.collection('missions').save(req.body);
   })
 })
+
+
 
 // get selectedMissionInfo
 app.get('/ocu/getMissionByName/:missionName',function(req,res){

@@ -96,7 +96,6 @@
            destination: {
                X: 8,
                y: -13,
-               r: 2.5
            },
            map: {
                rows: 16,
@@ -128,13 +127,23 @@
 
  })
  $('#postMission').bind('click', function() {
+
+
+
+    var file = document.getElementById('map').files[0];
+    var formdata = new FormData();
+    formdata.append("image",file);
    var missionData  = {
      'name':document.getElementById('name').value,
-     'description':document.getElementById('description').value
+     'description':document.getElementById('description').value,
+     'destination' : {'x':document.getElementById('x').value, 'y':document.getElementById('y').value},
+     'ArealMap' : formdata,
+     'traversabilityMap': ['0 1 0 1']
    }
    console.log('missionData Object', missionData);
-   $.post('/ocu/create/mission/',missionData);
-   window.location.replace("/");
+  //  $.post('/ocu/create/mission/',missionData,{contentType: false,processData: false});
+  //  window.location.replace("/");
+
    alert('Mission Created', missionData.name)
 
    // Example of map info
