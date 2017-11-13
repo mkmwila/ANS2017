@@ -8,7 +8,7 @@ var mapObject =  {};
 var Vclass = null;
 var position  = null;
 var io = require('socket.io-client');
-var socket = io.connect('http://146.64.244.203:3000', { reconnect: true });  // replaced the ip address
+var socket = io.connect('http://146.64.244.135:3000', { reconnect: true });  // replaced the ip address
 var async = require('async');
 var me = {
     id: 61,
@@ -110,31 +110,10 @@ function sendPosition(position){
 }
 
 
+function sendTraversability(vclass){
+  // TODO need to send the class to the comunicator script
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 // uses async waterfall and async paralell to combine all the results
 exports.synchroniseLocationAndTraversiblityData = function(req,res){
@@ -159,7 +138,6 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 
 });
 
-
 exports.getVehicleClass = function(req,res){
    console.log('got vehicel class');
    var vehicleClass = req.body;
@@ -170,13 +148,10 @@ exports.getVehicleClass = function(req,res){
    getVihicleClass(function(err,Vclass){
      if(err){
        console.log('failed to get the vehicleClass');
+       res.send({'message':err});
      }
-     console.log('this is the getVihicleClass', Vclass);
    });
-   // get vehicleClass
 }
-
-
 exports.getDynamicObstacleDetection = function(req,res){
   var obstacleDetection  = req.body;
   if(obstacleDetection!=null&&obstacleDetection){
