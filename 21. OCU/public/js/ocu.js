@@ -69,7 +69,6 @@
 
   // create a mission saves all the results on the database
 
-
  // =====================================================================================
  //              Load Mission to the World Model Spooler
  //======================================================================================
@@ -123,12 +122,8 @@
        });
 
      })
-
-
- })
+    })
  $('#postMission').bind('click', function() {
-
-
 
     var file = document.getElementById('map').files[0];
     var formdata = new FormData();
@@ -142,10 +137,9 @@
    }
    console.log('missionData Object', missionData);
   //  $.post('/ocu/create/mission/',missionData,{contentType: false,processData: false});
-  //  window.location.replace("/");
-
-   alert('Mission Created', missionData.name)
-
+  alert('Mission Created', missionData.name)
+  window.location.replace("/");
+  $.post('/create/mission/',missionData);
    // Example of map info
    // Must be read from file (JSON) converted from a Google image
    // Question : How to upload a JPEG file using socket.io?

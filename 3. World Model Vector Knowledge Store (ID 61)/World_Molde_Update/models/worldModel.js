@@ -30,12 +30,12 @@ mapObject.map = [
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
           [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -78,7 +78,6 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 
 exports.getVihicePosition = function(req,res){
   //
-
   var vehicleposition  = req.body;
   if(vehicleposition!=null&&vehicleposition){
     sendPosition(vehicleposition)
@@ -110,6 +109,17 @@ function sendPosition(position){
 }
 
 
+exports.sendPoseLocation = function(callback){
+ // gets position of poseLocaliser then pass the location to the localliser 
+ // TODO get location from the poseLocaliser : DEON
+  var poseLocation = {
+    x:2,
+    y:4,
+    r:1.2
+  }
+  return callback(null,poseLocation);
+}
+
 function sendTraversability(vclass){
   // TODO need to send the class to the comunicator script
 
@@ -139,7 +149,6 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 });
 
 exports.getVehicleClass = function(req,res){
-   console.log('got vehicel class');
    var vehicleClass = req.body;
    if(vehicleClass!=null&&vehicleClass){
      console.log('got vehicleData', vehicleClass);

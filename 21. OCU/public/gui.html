@@ -101,15 +101,21 @@
       <h4 class="modal-title">Create Mission</h4>
     </div>
     <div class="modal-body">
-      <<form id="uploadForm" enctype="multipart/form-data" method="post">
-		<input type="file" name="userFile" />
-		<input type="submit" value="Upload File" name="submit">
-	</form>
-
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary" id='postMission'>Create</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <label>Mission</label>
+      <input id='name'></input>
+      <br>
+      <label>Description</label>
+      <input id='description'></input>
+      <br>
+      <label>Destination</label>
+      <br>
+      <label>X</label>
+      <input id='x'></input>
+      <label>Y</label>
+      <input id='y'></input>
+		<input type="file" name="userFile" id='map' />
+    <button  type="button" class="btn btn-primary" id='postMission'>Create</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>
   </div>
 

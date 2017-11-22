@@ -1,3 +1,5 @@
+
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -27,6 +29,21 @@ app.use(cookieParser());
  app.post('/worldModel/position',synchronisationUtil.getVihicePosition) // gets position 
  app.post('/worldModel/traversability',synchronisationUtil.getVehicleClass) // gets class for traversability 
  app.post('/worldModel/obstacles',synchronisationUtil.getDynamicObstacleDetection) // route for dynamic obstabcle detection
- app.listen(3000)
+ app.get('/worldModel/localiser/map',function(req,res){
+     // send the map and the postion to the localiser 
+     synchronisationUtil.sendPoseLocation(function(err,poseLocationData){
+         if(err){
+             res.send({message:'an Error occured Whlist trying to send pose location' + err});
+         }
+         else{
+             // success in sending location to the localiser
+             res.send(poseLocationData);
+         }
+     });
+ })
+ app.listen(3000,function(){
+     
+     console.log('world model lsitening at %s', '3000');
+ })
 
- console.log('app listening on port 3000');
+

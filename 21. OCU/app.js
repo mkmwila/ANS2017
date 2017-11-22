@@ -38,7 +38,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/ocu/create/mission/',function(req,res){res.render('public/gui.html')});
+app.get('/',function(req,res){res.render('public/gui.html')});
 app.get('/ocu/missions/',function(req,res){
     OcuUtil.getAllMissions(function(err,missions){
       if(err){
@@ -47,17 +47,10 @@ app.get('/ocu/missions/',function(req,res){
        res.send(missions)
     })
 })
-app.post('/ocu/create/mission/',function(req,res){
+app.post('/create/mission/',function(req,res){
   // connect to th mongodababase
-  var upload = multer({
-		storage: storage
-	}).single('userFile')
-	upload(req, res, function(err) {
-		console.log('file uploaded to the database')
-	})
-  mongoClient.connect('mongodb://localhost:27017/ocu',function(err,db){
-    db.collection('missions').save(req.body);
-  })
+  console.log('console', req.body);
+	res.send({"message":"Mission uploaded successfully"})
 })
 
 

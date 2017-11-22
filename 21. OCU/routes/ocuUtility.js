@@ -12,7 +12,6 @@ var mongoClient = require('mongodb').MongoClient,
        if(err){
          callback(err);
        }else{
-         console.log('loading Missions', missions)
           callback(err,missions)
        }
      });
