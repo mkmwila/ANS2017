@@ -29,7 +29,7 @@ app.use(cookieParser());
  app.post('/worldModel/position',synchronisationUtil.getVihicePosition) // gets position 
  app.post('/worldModel/traversability',synchronisationUtil.getVehicleClass) // gets class for traversability 
  app.post('/worldModel/obstacles',synchronisationUtil.getDynamicObstacleDetection) // route for dynamic obstabcle detection
- app.get('/worldModel/localiser/map',function(req,res){
+ app.get('/worldModel/localiser/position',function(req,res){
      // send the map and the postion to the localiser 
      synchronisationUtil.sendPoseLocation(function(err,poseLocationData){
          if(err){
@@ -45,5 +45,4 @@ app.use(cookieParser());
      
      console.log('world model lsitening at %s', '3000');
  })
-
 
