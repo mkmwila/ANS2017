@@ -113,9 +113,9 @@ exports.sendPoseLocation = function(callback){
  // gets position of poseLocaliser then pass the location to the localliser 
  // TODO get location from the poseLocaliser : DEON
   var poseLocation = {
-    x:2,
-    y:4,
-    r:1.2
+    x:491.5,
+    y:465.0,
+    r:1.578
   }
   return callback(null,poseLocation);
 }

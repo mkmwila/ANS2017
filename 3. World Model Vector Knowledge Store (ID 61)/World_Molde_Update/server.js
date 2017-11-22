@@ -1,5 +1,6 @@
 
 
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -21,28 +22,45 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
-
 /*
  routes - dedicated for the localiser and traversability grid 
 */
+var positionObject ={};
+// localPose
+app.post('/worldModel/localPose/position',function(req,res){
+    var positionData = req.body;
+    positionData = {'x':parseFloat(positionData.x),'y':parseFloat(positionData.y),'r':parseFloat(positionData.r)};
+    console.log('postion data',positionData);
+    setPositionPose(positionData);
+    res.json({'message':positionData});
+});
 
- app.post('/worldModel/position',synchronisationUtil.getVihicePosition) // gets position 
- app.post('/worldModel/traversability',synchronisationUtil.getVehicleClass) // gets class for traversability 
- app.post('/worldModel/obstacles',synchronisationUtil.getDynamicObstacleDetection) // route for dynamic obstabcle detection
- app.get('/worldModel/localiser/position',function(req,res){
-     // send the map and the postion to the localiser 
-     synchronisationUtil.sendPoseLocation(function(err,poseLocationData){
-         if(err){
-             res.send({message:'an Error occured Whlist trying to send pose location' + err});
-         }
-         else{
-             // success in sending location to the localiser
-             res.send(poseLocationData);
-         }
-     });
- })
- app.listen(3000,function(){
-     
-     console.log('world model lsitening at %s', '3000');
- })
+// localiser
+app.get('/worldModel/localiser/position',function(req,res){
+    // passing the location data to the localiser
+    var positionData = getPositionPose();
+    
+    console.log('gettting location', positionData);
+    res.json(positionData);
+});
 
+app.post('/worldModel/position',synchronisationUtil.getVihicePosition) // gets position 
+app.post('/worldModel/traversability',synchronisationUtil.getVehicleClass) // gets class for traversability 
+app.post('/worldModel/obstacles',synchronisationUtil.getDynamicObstacleDetection) // route for dynamic obstabcle detection
+
+/*
+  Hepler Region
+*/
+function setPositionPose(position){
+positionObject = position;
+return; 
+}
+
+function getPositionPose(){
+return positionObject;
+}
+
+app.listen(3000,function(){
+
+console.log('world model lsitening at %s', '3000');
+});
