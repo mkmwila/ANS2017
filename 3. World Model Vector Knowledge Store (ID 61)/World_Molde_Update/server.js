@@ -21,76 +21,67 @@ app.use(cookieParser());
 // connect to the mongodb database 
 mongoose.connect('mongodb://localhost/atnMessageInterface');
 
-
-/*
- routes - dedicated for the localiser and traversability grid 
-*/
-var positionObject ={};
-var angleObject ={};
-var yawObject = {};
 // localPose
 app.post('/worldModel/localPose/position',function(req,res){
-    var positionData = req.body;
-    var yaw = getYawAngle();
-    console.log('yaw angle about to be sent', yaw);
-    positionData = {'x':parseFloat(positionData.x),'y':parseFloat(positionData.y),'yaw': parseInt(getYawAngle().yaw)};
-    console.log('postion data',positionData);
-    setPositionPose(positionData);
-    res.json({'message':positionData});
+    var positionData = req.body; // get position data
+    synchronisationUtil.localPoseSynchronisation(positionData,function(err,localPose){
+        // localpose 
+        if(err){
+            return res.json(err);
+        }else{
+            return res.json(localPose);
+        }
+    })
 });
 
 // localiser
 app.get('/worldModel/localiser/position',function(req,res){
-    // passing the location data to the localiser
-    var positionData = getPositionPose();
-    console.log('gettting location', positionData);
-    res.json(positionData);
+    synchronisationUtil.localiserSynchronisation(function(err,position){
+        if(err){
+            return res.json(err)
+        }else{
+            return res.json(position);
+        }
+    });
 });
 
 app.post('/worldModel/position',synchronisationUtil.getVihicePosition) // gets position 
-app.post('/worldModel/traversability',synchronisationUtil.getVehicleClass) // gets class for traversability 
-app.post('/worldModel/obstacles',synchronisationUtil.getDynamicObstacleDetection) // route for dynamic obstabcle detection
-
-/*
- * getting the yho angle from the Global Pose 
-*/
+app.post('/worldModel/traversability/',synchronisationUtil.getVehicleClass) // gets class for traversability 
+app.post('/worldModel/obstacles/',function(req,res){
+    var dynamicObstacle = req.body;
+    synchronisationUtil.getDynamicObstacleDetection(dynamicObstacle,function(err,obstacle){
+        if(err){
+            res.json(err);
+        }else{
+            res.json(dynamicObstacle);
+        }
+    })
+});
 
 app.post('/worldModel/GPose/angle',function(req,res){
     var yaw = req.body;
-    console.log('yaw angle', yaw);
-    setYawAngle(yaw);
-    console.log('Global Pose Yaw angle', yaw);
-    res.json({"message": 'angle recieved'});
+    synchronisationUtil.globalPoseSynchronisation(yaw,function(err,message){
+        console.log('geting the yaw angle',yaw);
+        if(err){
+            res.json(err);
+        }else{
+            res.json(message);
+        }
+    });
 });
 // parse yaw angle to the localiser
 app.get('/worldModel/globalpose/yaw',function(req,res){
-    // send yaw angle to the localiser
-    var yaw = getYawAngle();
-    console.log('sending Yaw Angle ..', yaw);
-    res.json(yaw);
-})
+    synchronisationUtil.globalPoseYawAngle(function(err,yaw){
+        if(err){
+            res.json(err)
+        }
+        else{
+            res.json(yaw)
+        }
+    });
+});
 
-/*
-  Hepler Region
-*/
-function setPositionPose(position){
-positionObject = position;
-return; 
-}
-
-function getPositionPose(){
-return positionObject;
-}
-
-function setYawAngle(yaw){
-    yawObject = yaw;
-    return;
-}
-
-function getYawAngle(){
-    return yawObject;
-}
 
 app.listen(3000,function(){
-    console.log('world model lsitening at %s', '3000');
+    console.log('world model Listening  at %s', '3000');
 });

@@ -1,3 +1,4 @@
+
 /*
 This script synchronises data and sends the results of the json to the path planner
  The data of previous locations of the car are stored on the database fot hostorical logs
@@ -10,6 +11,9 @@ var position  = null;
 var io = require('socket.io-client');
 var socket = io.connect('http://146.64.244.135:3000', { reconnect: true });  // replaced the ip address
 var async = require('async');
+
+var positionObject ={},angleObject ={},yawObject = {}, obstacleObject={},traversabilityObject ={};
+
 var me = {
     id: 61,
     name: 'Vector Knowledge Store'
@@ -64,10 +68,7 @@ socket.on('connect', () => { // begining of the connection estalished block of c
         console.log('\n\n => Connected Nodes: ', JSON.stringify(systemTree, null, 4));
 
     });
-
-
-
-
+    
     // Hanling disconnection
     //----------------------
     socket.on('disconnect', () => {
@@ -75,6 +76,13 @@ socket.on('connect', () => { // begining of the connection estalished block of c
     });
 
 })
+
+socket.on('connect', () => { 
+  // begining of the connection estalished block of code
+  // display a message on the console
+  console.log('\n\n => Connection to the G-Bat Network has been established!!\n\n');
+
+});
 
 exports.getVihicePosition = function(req,res){
   //
@@ -87,6 +95,113 @@ exports.getVihicePosition = function(req,res){
     res.send({'message':'error'})
   }
 }
+
+exports.sendPoseLocation = function(callback){
+ // gets position of poseLocaliser then pass the location to the localliser 
+ // TODO get location from the poseLocaliser : DEON
+  var poseLocation = {
+    x:491.5,
+    y:465.0,
+    r:1.578
+  }
+  return callback(null,poseLocation);
+}
+
+exports.localPoseSynchronisation = function(positionData,callback){
+    
+    var yaw = getYawAngle(); // get yaw angle 
+    console.log('yaw angle about to be sent', yaw);
+    // fusing dynamic obstacle recieved 
+    var dynamicObj = getDynamicObstacle();
+    console.log('obstacle',dynamicObj);
+    // convert values revieved into float
+    positionData = {'x':parseFloat(positionData.x),'y':parseFloat(positionData.y),'yaw': parseInt(getYawAngle().yaw),'obstacle':dynamicObj};
+    console.log('postion data',positionData);
+    setPositionPose(positionData);
+    callback(null,positionData);
+  
+}
+
+exports.localiserSynchronisation = function(callback){
+  // passing the location data to the localiser
+  var positionData = getPositionPose();
+  console.log('gettting location', positionData);
+  return callback(null,positionData);
+}
+
+exports.globalPoseSynchronisation = function(yaw,callback){
+  
+  console.log('yaw angle', yaw);
+  setYawAngle(yaw);
+  console.log('Global Pose Yaw angle', yaw);
+  callback(null,{"message": 'angle recieved'});
+}
+
+exports.globalPoseYawAngle = function(callback){
+  // send yaw angle to the localiser
+  var yaw = getYawAngle();
+  console.log('sending Yaw Angle ..', yaw);
+  return callback(null,yaw);
+}
+
+
+// uses async waterfall and async paralell to combine all the results
+exports.synchroniseLocationAndTraversiblityData = function(req,res){
+  // ideally this should req.body  //req.body; // expect to recieved the data in this manner
+  console.log('this is map object before being processed', mapObject);
+  async.waterfall([
+    function(donecallback){
+       // gets all the relevent data from other parties when the data is recieved we pass it to the next function to sync the data
+       // more steps will be taken here
+      (donecallback(mapObject))
+      res.json(mapObject)
+    }
+  ],function(success){
+      console.log('mapObject Sent!');
+  })
+}
+
+exports.getVehicleClass = function(req,res){
+   var vehicleClass = req.body;
+   if(vehicleClass!=null&&vehicleClass){
+     console.log('got vehicleData', vehicleClass);
+      setVihicleClass(vehicleClass)
+   }
+   getVihicleClass(function(err,Vclass){
+     if(err){
+       console.log('failed to get the vehicleClass');
+       res.send({'message':err});
+     }
+   });
+}
+ // get dynamic obstacle
+exports.getDynamicObstacleDetection = function(obstacleDetection,callback){
+  console.log('obstacleObject',obstacleDetection.data.length);
+  var dynamicObject = obstacleDetection;
+  setObstacleObject(obstacleDetection);
+  callback(null,dynamicObject);
+
+}
+
+
+
+
+/*
+ Helper function region
+*/
+
+ // send local position
+
+function setObstacleObject(obstacle){
+  obstacleObject = obstacle;
+  return;
+}
+
+function getDynamicObstacle(){
+  return obstacleObject;
+}
+
+
 
 function sendPosition(position){
   var  nodeInfo = {};
@@ -108,79 +223,43 @@ function sendPosition(position){
   })
 }
 
-
-exports.sendPoseLocation = function(callback){
- // gets position of poseLocaliser then pass the location to the localliser 
- // TODO get location from the poseLocaliser : DEON
-  var poseLocation = {
-    x:491.5,
-    y:465.0,
-    r:1.578
-  }
-  return callback(null,poseLocation);
+// set position
+function setPositionPose(position){
+  positionObject = position;
+  return; 
+}
+  
+function getPositionPose(){
+  return positionObject;
 }
 
-function sendTraversability(vclass){
-  // TODO need to send the class to the comunicator script
-
+function setYawAngle(yaw){
+    yawObject = yaw;
+    return;
 }
 
-// uses async waterfall and async paralell to combine all the results
-exports.synchroniseLocationAndTraversiblityData = function(req,res){
-  // ideally this should req.body  //req.body; // expect to recieved the data in this manner
-  console.log('this is map object before being processed', mapObject);
-  async.waterfall([
-    function(donecallback){
-       // gets all the relevent data from other parties when the data is recieved we pass it to the next function to sync the data
-       // more steps will be taken here
-      (donecallback(mapObject))
-      res.json(mapObject)
-    }
-  ],function(success){
-      console.log('mapObject Sent!');
-  })
+function getYawAngle(){
+    return yawObject;
 }
 
-
-socket.on('connect', () => { // begining of the connection estalished block of code
-    // display a message on the console
-    console.log('\n\n => Connection to the G-Bat Network has been established!!\n\n');
-
-});
-
-exports.getVehicleClass = function(req,res){
-   var vehicleClass = req.body;
-   if(vehicleClass!=null&&vehicleClass){
-     console.log('got vehicleData', vehicleClass);
-      setVihicleClass(vehicleClass)
-   }
-   getVihicleClass(function(err,Vclass){
-     if(err){
-       console.log('failed to get the vehicleClass');
-       res.send({'message':err});
-     }
-   });
-}
-exports.getDynamicObstacleDetection = function(req,res){
-  var obstacleDetection  = req.body;
-  if(obstacleDetection!=null&&obstacleDetection){
-    console.log('got obstacleDetection', obstacleDetection);
-  }
-  res.send({"message":"recieved obstacle"});
+function setTraversabilityClass(traversability){
+        traversabilityObject = traversability;
+        return ;
 }
 
+function getTraversabilityClass(){
+    return traversabilityObject;
+}
+
+ //  setTraversability class
 function setVihicleClass (Vclass){
   console.log('Vclass', Vclass);
   this.Vclass = Vclass
   return Vclass;
 }
+// get vehicle class 
 function getVihicleClass(callback){
   console.log('vehicleClass:::');
   return callback(Vclass)
 }
-getVihicleClass(function(err,Vclass){
-  if(err){
-    console.log('failed to get the vehicleClass');
-  }
-  console.log('this is the getVihicleClass', Vclass);
-});
+
