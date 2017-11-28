@@ -1,0 +1,2 @@
+ans_msgs:image_publisher:object_tracker
+-DCATKIN_DEVEL_PREFIX=/home/terence/dev/ANS2017/22. ROS/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/terence/dev/ANS2017/22. ROS/catkin_ws/install -G Unix Makefiles

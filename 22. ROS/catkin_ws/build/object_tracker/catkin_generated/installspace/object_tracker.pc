@@ -1,0 +1,8 @@
+prefix=/home/terence/dev/ANS2017/22. ROS/catkin_ws/install
+
+Name: object_tracker
+Description: Description of object_tracker
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/terence/dev/ANS2017/22. ROS/catkin_ws/install/lib 
+Requires: 
