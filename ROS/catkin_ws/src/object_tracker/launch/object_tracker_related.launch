@@ -1,0 +1,15 @@
+<launch>
+
+	<!-- Object Tracker -->
+	<node name="object_tracker" pkg="object_tracker" type="object_tracker_node">
+	<param name="model_file" value="/home/terence/dev/caffeSSD/models/VGGNet/VOC0712Plus/SSD_300x300/deploy.prototxt"/>
+	<param name="trained_file" value="/home/terence/dev/caffeSSD/models/VGGNet/VOC0712Plus/SSD_300x300/VGG_VOC0712Plus_SSD_300x300_iter_240000.caffemodel"/>
+	<param name="image_topic" value="camera/image" />
+	</node>
+
+	<!-- Sends tracks info to worldmap -->
+	<node name="send_tracks_to_worldmap" pkg="object_tracker" type="send_tracks_to_worldmap.py" respawn="true" output="screen">
+        <param name="ip" value="146.64.244.232"/>
+	</node>
+
+</launch>
