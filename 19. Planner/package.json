@@ -1,8 +1,8 @@
 {
-  "name": "system-commander",
+  "name": "local-path-segment-driver",
   "version": "1.0.0",
-  "description": "",
-  "main": "system-commander.js",
+  "description": "Local Path Segment Driver in Node.js",
+  "main": "localPathSeg-driver.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
