@@ -15,7 +15,7 @@
 
 const moment = require('moment');
 const io = require('socket.io-client');
-const socket = io.connect('http://146.64.244.203:3000', { reconnect: true });  // replaced the ip address 
+const socket = io.connect('http://worldModel.local:3000', { reconnect: true }); // replaced the ip address 
 const spawn = require('child_process').spawn;
 const pathPlanning = './path.exe';
 var Planner = spawn(pathPlanning);
@@ -24,13 +24,43 @@ var Planner = spawn(pathPlanning);
 
 var me = {
     id: 48,
-    name: 'Local Path Segment Driver'
+    name: 'Path Planner'
 };
 var systemTree = [me];
 
 var mapData = {};
 
 var ExecuteList = {};
+var dummyExecuteList = {
+    Data: [{
+            Distance: 5.82487,
+            Inverse_Radius: 0.51001,
+            Linear_Velocity: 5.200012
+        },
+        {
+            Distance: 8.2487,
+            Inverse_Radius: 0.081001,
+            Linear_Velocity: 6.200012
+        },
+        {
+            Distance: 6.82487,
+            Inverse_Radius: -0.51001,
+            Linear_Velocity: 3.48712
+        },
+        {
+            Distance: 11.82487,
+            Inverse_Radius: 0.0751001,
+            Linear_Velocity: 10.48712
+        },
+        {
+            Distance: 11.82487,
+            Inverse_Radius: 0.3751001,
+            Linear_Velocity: 1.48712
+        }
+    ],
+    name: "Path Planner",
+    timeStamp: 1511955828
+};
 
 var Map = { TimeStamp: 15488843, currentPosition: [1, 2], Destination: [58, -25], from: 'WorldModel' };
 
@@ -78,7 +108,7 @@ socket.on('connect', () => { // begining of the connection estalished block of c
     // Receive map data from Vector knowledge store : Message ID = 4400h
     //---------------------------------------------------------------------
     // respond with message ID : 4400h => Acknowledgemt to the Data received
-    socket.on('4A23h', (nodeInfo) => {  // Receiving the map block of code
+    socket.on('4A23h', (nodeInfo) => { // Receiving the map block of code
         mapData = nodeInfo.data[0];
         console.log('\n\n => Received  Map data => ', JSON.stringify(mapData, null, 4));
         // retrieve the payload and process it
@@ -96,55 +126,59 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 
         // console.log(`\n\n -> The data is ${mapDataStr}`);
 
-      
+
         // when data comes from the child process on stderr
         // used here for debugging purposes
         //-------------------------------------------------
-        Planner.stderr.on('data', function (data) {
+        Planner.stderr.on('data', function(data) {
 
-            console.log('Data received inside the c++ code => ' + data);
+            //   console.log('Sending Data to the c++ code => OK\n\n');
         });
-/* 
+        /* 
 
-        // Simulate entering data for gets() after 1 second
-        setTimeout(function () {
-            console.log('sending Data to the path planner c++ executable program (planner.exe) ....');
-            Planner.stdin.write(Map);
-            Planner.stdin.write('\n');
-        }, 1000);
+                // Simulate entering data for gets() after 1 second
+                setTimeout(function () {
+                    console.log('sending Data to the path planner c++ executable program (planner.exe) ....');
+                    Planner.stdin.write(Map);
+                    Planner.stdin.write('\n');
+                }, 1000);
 
-        socket.on('4A23h', (nodeInfo) => {  // Receiving the map block of code
-            console.log('\n\n => Received  Map data => ', JSON.stringify(nodeInfo.data, null, 4));
-            // retrieve the payload and process it
-            mapData = JSON.stringify(Map, null, 4);
-            // mapData = JSON.stringify(nodeInfo.data, null, 4);
-        });
+                socket.on('4A23h', (nodeInfo) => {  // Receiving the map block of code
+                    console.log('\n\n => Received  Map data => ', JSON.stringify(nodeInfo.data, null, 4));
+                    // retrieve the payload and process it
+                    mapData = JSON.stringify(Map, null, 4);
+                    // mapData = JSON.stringify(nodeInfo.data, null, 4);
+                });
 
-*/
+        */
 
         // when data comes from the child process on stdout
         //-------------------------------------------------
 
-        Planner.stdout.on('data', function (data) {
+        Planner.stdout.on('data', function(data) {
 
 
             // 1.the data is in the hex format => convert it to string!
             myData = data.toString();
             //myData = data;
 
-            console.log('Received Data from c++ ...\n\n\n =>   ' + myData);
+            console.log('\n\nReceived Data from c++ ...\n\n\n =>   ' + myData);
             //console.log('\n\n\n myData is of type ' + typeof (myData));
-            if (typeof (myData !== 'undefined')) {
+            if (typeof(myData !== 'undefined')) {
                 //3.  convert the JSON format to an object
                 myObject = JSON.parse(myData);
                 //executeList = myObject.Data;
                 executeList = myData;
-                
+
+                // Test with Dummy Execute list Data -> Comment out
+                executeList = dummyExecuteList;
+                console.log('\n\n\nTesting with Dummy data ...\n\n\n =>   ' + JSON.stringify(executeList, null, 4));
+
                 // 3 Send the ExecuteList to the Local Vector driver : Message ID = 041Eh 
                 //3.1 Initialise the message to be sent
                 messageID = '041Eh';
                 data = executeList;
-                recipientID = 43;
+                recipientID = 33;
                 sequence = 1;
 
 
@@ -164,7 +198,7 @@ socket.on('connect', () => { // begining of the connection estalished block of c
                         data: data,
                         sequenceNo: sequence
                     };
-                   // console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
+                    // console.log('\n\n -> nodeInfo => ', JSON.stringify(nodeInfo, null, 4));
                     //3.4 sending the message
                     console.log(`\n\n -> Sending the execute command to ${nodeInfo.recipient.name}....`);
                     socket.emit(nodeInfo.messageID, nodeInfo, (ack) => {
@@ -229,7 +263,7 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 
     });
 
-});// end of the connection estalished block of code
+}); // end of the connection estalished block of code
 
 //=============================================================================================
 // what it can do after connection is established  -> to be inplemented in your code 
@@ -270,12 +304,12 @@ socket.on('connect', () => { // begining of the connection estalished block of c
 var messageID, data, recipientID, sequence;
 
 // Waiting for the connection to be established and stable (5second with the setTimeout function)
- console.log ("Waiting for the connection to be established and stable -> 5 seconds...\n ")
+console.log("Waiting for the connection to be established and stable -> 5 seconds...\n ")
 setTimeout(() => {
     console.log(" *- Starting the Test... -*")
-    //
-    //1.  request map from the vector knowledge store
-    //  1.1 initialize recipient and command
+        //
+        //1.  request map from the vector knowledge store
+        //  1.1 initialize recipient and command
     messageID = '2A23h';
     data = {};
     recipientID = 61;
@@ -317,4 +351,3 @@ setTimeout(() => {
 
 
 }, 3000);
-

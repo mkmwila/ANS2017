@@ -25,8 +25,8 @@ using namespace std::chrono;
 using namespace nlohmann;
 
 
-const int n=16; //initialisation of horizontal size of the map
-const int m=16; //initialisation of vertical size size of the map
+const int n=16; // use 16x16 grid for implementation - initialisation of horizontal size of the map
+const int m=16; //use 16x16 grid for implementation - initialisation of vertical size size of the map
 static int trav_map[n][m];
 // if dir==8
 //{
@@ -205,6 +205,7 @@ float *trajectory(int *global_route, float speed_limit, float cell_size, float w
 	float steering_angle[(3*size_global)]; // Steering angle in radians for the next ?? waypoints
 	float linear_velocity[(3*size_global)]; // Throttle position for the next ?? waypoints
 	float distance[(3*size_global)]; // time perriod to maintain speed and angular velocity state for the next ?? wayoints
+	float inverse_radius[(3*size_global)]; // inverse of turn radius - required by driver in place of steering angle
 	
 /* Although the entire route is calculated as a series of waypoints from current position to goal,
 the steering angle (heading) and throttle position (speed) is only calculated to get to the "next" waypoint.
@@ -228,22 +229,27 @@ looking 2 waypoints ahead implies we consider the next 7 to 9 waypoints dependin
 		{
 			linear_velocity[j]=speed_limit; //  
 			steering_angle[j]=0;
+			inverse_radius[j]=0;
 			distance[j]=(sqrt((((*(global_route+i+1)+0.5)*cell_size-current_x)*((*(global_route+i+1)+0.5)*cell_size-current_x))+(((*(global_route+i)+0.5)*cell_size-current_y)*((*(global_route+i)+0.5)*cell_size-current_y))))/3; 
 			
 			linear_velocity[j+1]=linear_velocity[j]/2; //  
 			steering_angle[j+1]=0;
+			inverse_radius[j+1]=0;
 			distance[j+1]=distance[j]; 
 			
 			linear_velocity[j+2]=linear_velocity[j+1]/2; //  
 			steering_angle[j+2]=0;
+			inverse_radius[j+2]=0;
 			distance[j+2]=distance[j]; 
 			
 			linear_velocity[j+3]=0; //  
 			steering_angle[j+3]=0;
+			inverse_radius[j+3]=0;
 			distance[j+3]=0; 
 			
 			linear_velocity[j+4]=0; //  
 			steering_angle[j+4]=0;
+			inverse_radius[j+4]=0;
 			distance[j+4]=0;
 			
 			j=j+5;
@@ -257,6 +263,7 @@ looking 2 waypoints ahead implies we consider the next 7 to 9 waypoints dependin
 		{
 			linear_velocity[j]=speed_limit; 
 			steering_angle[j]=0;
+			inverse_radius[j]=0;
 			distance[j]=(sqrt(((((*(global_route+i)+0.5)*cell_size)-current_x)*(((*(global_route+i)+0.5)*cell_size)-current_x))+((((*(global_route+i+1)+0.5)*cell_size)-current_y)*(((*(global_route+i+1)+0.5)*cell_size)-current_y)))); 
 			j++;
 			current_x=(*(global_route+i)+0.5)*cell_size; // updates current position
@@ -376,12 +383,15 @@ looking 2 waypoints ahead implies we consider the next 7 to 9 waypoints dependin
 				{
 					linear_velocity[j]=speed_limit; // max speed until waypoint before entering turn 
 					steering_angle[j]=0;
+					inverse_radius[j]=0;
 					distance[j]=sqrt((waypoint1[0]-waypoint0[0])*(waypoint1[0]-waypoint0[0])+(waypoint1[1]-waypoint0[1])*(waypoint1[1]-waypoint0[1])); 
 					linear_velocity[j+1]=speed_limit-((steering/theta_limit)*speed_limit)+1; //reduce speed to cornering speed
 					steering_angle[j+1]=0;
+					inverse_radius[j+1]=0;
 					distance[j+1]=sqrt((waypoint2[0]-waypoint1[0])*(waypoint2[0]-waypoint1[0])+(waypoint2[1]-waypoint1[1])*(waypoint2[1]-waypoint1[1])); 
 					linear_velocity[j+2]=speed_limit-((steering/theta_limit)*speed_limit)+1; // inversely proportional to steering angle 
 					(cross_product>0)?steering_angle[j+2]=steering:steering_angle[j+2]=(-1)*steering;
+					(cross_product>0)?inverse_radius[j+2]=(1/r1):inverse_radius[j+2]=(-1)*(1/r1);
 					distance[j+2]=r1*fabs(alpha); 
 					j+=3;
 					break;
@@ -395,7 +405,8 @@ looking 2 waypoints ahead implies we consider the next 7 to 9 waypoints dependin
 	for (i=0; i<j; i++)
 	{
 		path_plan[i][0]=linear_velocity[i];
-		path_plan[i][1]=steering_angle[i];
+//		path_plan[i][1]=steering_angle[i]; //switch on either steering angle or inverse radius
+		path_plan[i][1]=inverse_radius[i]; //switch on either steering angle or inverse radius
 		path_plan[i][2]=distance[i];
 	}
 	
@@ -495,27 +506,32 @@ int main(int argc, char** argv) {
 				{"Data",{
 					{			
 						{"Linear_Velocity", 0},
-						{"Steering_Angle", 0},
+//						{"Steering_Angle", 0}, // Switch on either steering angle or inverse radius
+						{"Inverse_Radius", 0},
 						{"Distance", 0}
 					},
 					{
 						{"Linear_Velocity", 0},
-						{"Steering_Angle", 0},
+//						{"Steering_Angle", 0}, // Switch on either steering angle or inverse radius
+						{"Inverse_Radius", 0},
 						{"Distance", 0}
 					},
 					{
 						{"Linear_Velocity", 0},
-						{"Steering_Angle", 0},
+//						{"Steering_Angle", 0}, // Switch on either steering angle or inverse radius
+						{"Inverse_Radius", 0},
 						{"Distance", 0}
 					},
 					{
 						{"Linear_Velocity", 0},
-						{"Steering_Angle", 0},
+//						{"Steering_Angle", 0}, // Switch on either steering angle or inverse radius
+						{"Inverse_Radius", 0},
 						{"Distance", 0}
 					},
 					{
 						{"Linear_Velocity", 0},
-						{"Steering_Angle", 0},
+//						{"Steering_Angle", 0}, // Switch on either steering angle or inverse radius
+						{"Inverse_Radius", 0},
 						{"Distance", 0}
 					}
 					
@@ -537,27 +553,32 @@ int main(int argc, char** argv) {
 				{"Data",{
 					{			
 						{"Linear_Velocity", *(local_path)},
-						{"Steering_Angle", *(local_path+1)},
+//						{"Steering_Angle", *(local_path+1)}, //Switch on either steering angle or inverse radius
+						{"Inverse_Radius", *(local_path+1)},
 						{"Distance", *(local_path+2)}
 					},
 					{
 						{"Linear_Velocity", *(local_path+3)},
-						{"Steering_Angle", *(local_path+4)},
+//						{"Steering_Angle", *(local_path+4)}, //Switch on either steering angle or inverse radius
+						{"Inverse_Radius", *(local_path+4)},
 						{"Distance", *(local_path+5)}
 					},
 					{
 						{"Linear_Velocity", *(local_path+6)},
-						{"Steering_Angle", *(local_path+7)},
+//						{"Steering_Angle", *(local_path+7)}, //Switch on either steering angle or inverse radius
+						{"Inverse_Radius", *(local_path+7)},
 						{"Distance", *(local_path+8)}
 					},
 					{
 						{"Linear_Velocity", *(local_path+9)},
-						{"Steering_Angle", *(local_path+10)},
+//						{"Steering_Angle", *(local_path+10)}, //Switch on either steering angle or inverse radius
+						{"Inverse_Radius", *(local_path+10)},
 						{"Distance", *(local_path+11)}
 					},
 					{
 						{"Linear_Velocity", *(local_path+12)},
-						{"Steering_Angle", *(local_path+13)},
+//						{"Steering_Angle", *(local_path+13)}, //Switch on either steering angle or inverse radius
+						{"Inverse_Radius", *(local_path+13)},
 						{"Distance", *(local_path+14)}
 					}
 					
@@ -569,7 +590,7 @@ int main(int argc, char** argv) {
 	string path=local_path_plan.dump(); //converts local_path_plan to string
 	
 	const char* processed_Data=path.c_str();
-	fprintf(stdout, processed_Data);	// sends data and also prints to screen
+	cout<<(stdout, processed_Data);	// sends data and also prints to screen
 	steady_clock::time_point end=steady_clock::now();
 	
 //	cout<<"\nTime to calculate the global route (us): "<<time_global<<endl;
