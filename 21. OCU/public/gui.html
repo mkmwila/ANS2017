@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
 
     <title>G-BAT Operator Control Unit</title>
 
@@ -20,9 +22,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </head>
-
+<style>
+    #map_canvas {
+        
+        height: 400px;
+    }
+  </style>
 <body>
-
+    
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
@@ -36,6 +43,16 @@
                         <a class="nav-link" href="#">Home
                 <span class="sr-only">(current)</span>
               </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -49,7 +66,7 @@
             <small> (OCU)</small>
         </h1>
         <div class="container">
-  <p>Use the .dropdown-menu class to Select a Mission.</p>
+  <p>Use the dropdown-menu class to Select a Mission</p>
     <div id="nav_wrapper">
 
       	<class="form-inline" role="form">
@@ -61,9 +78,6 @@
      </div>
      <br>
      <div class="row">
-
-
-
          <div class="col-md-3 col-sm-2 mb-3">
              <button class="btn btn-danger" id='stop'>Stop Mission</button>
          </div>
@@ -78,22 +92,64 @@
          <div class="col-md-2 col-sm-2 mb-2">
              <button class="btn btn-default" id='manual'>Manual Override</button>
          </div>
-
-
      </div>
+     <legend></legend>
+     <div id="future"></div>
+     <!-- The radio  buttons to select the driving mode 
+         -----------------------------------------------  -->  
+        <form>
+             <fieldset>
+            <h3><b>G-BAT Drive Mode:</b></h3>
+            <input class="rd3" type="radio" name="G-batMode" value="Autonomous" checked> Autonomous<br>
+            <input class="rd2" type="radio" name="G-batMode" value="|Remote Controled"> RemoteControlled<br>
+            <input class="rd1" type="radio" name="G-batMode" value="Mission Planner Mode"> Mission Planner Mode
+            </fieldset><br>
+        </form>
+        <p>
+                
+        <h3><b>Wrench Effort Control:</b></h3>
+        <form id="form" id="Direction_Control">
+            <div id="ft">
+            <label for="Dir"> Direction (Stepper Motor) : </label>
+            <input type="range" min="0" max="100" value="0" step="0.1" id="dir" oninput="updateDirection(value)" />
+            <output for="fader" id="dirEffort">100</output></div>
+        </form>
+    
+        <form id="form" id="Breakd_Control">
+                <div id="ftt">
+            <label for="Breaks"> Breaks Throttle (Servo1):   </label>
+            <input type="range" min="0" max="100" value="0" step="0.1" id="Breaks" oninput="updateBreaks(value)" />
+            <output for="fader" id="breakEffort">100</output></div>
+        </form>
+        <form id="form" id="Speed_Control">
+                <div id="fttt">
+            <label for="Speed">Speed Throttle (Servo2): </label>
+            <input type="range" min="0" max="100" value="0" step="0.1" id="speed" oninput="updateSpeed(value)" />
+            <output for="fader" id="speedEffort">100</output></div>
 
+        </form>
+    </p>
+        <legend></legend>
         <!-- Portfolio Item Row -->
         <div class="row">
           <div class="col-md-8">
-                <img class="img-fluid" src="http://placehold.it/750x500" alt="">
+            <b>X:
+                <input id="lat" name="lat" val="40.713956" />
+               
+              
+                <b>Y:
+                <input id="long" name="long" val="74.006653" /></b>
+                <br />
+                <br />
+                <div id="mapp" style="width: 500px; height: 250px;"></div>             
             </div>
-            <h3 class="my-4">Related Projects</h3>
+            <h3 class="my-4"></h3>
         </div>
 
 
 <div id="createMission" class="modal fade" role="dialog">
 <div class="modal-dialog">
-
+<form action= "/" method= "POST" enctype="multipart/form-data">
   <!-- Modal content-->
   <div class="modal-content">
     <div class="modal-header">
@@ -101,22 +157,21 @@
       <h4 class="modal-title">Create Mission</h4>
     </div>
     <div class="modal-body">
-      <label>Mission</label>
-      <input id='name'></input>
+      <label>Mission Name</label>
+      <input id='name' type='text'></input>
       <br>
       <label>Description</label>
-      <input id='description'></input>
+      <input id='description' type='text'></input>
       <br>
-      <label>Destination</label>
-      <br>
-      <label>X</label>
-      <input id='x'></input>
-      <label>Y</label>
-      <input id='y'></input>
-		<input type="file" name="userFile" id='map' />
-    <button  type="button" class="btn btn-primary" id='postMission'>Create</button>
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <div class="modal-footer">
+      <label>Map</label>
+      <input  type="file" name="myimage" id='image'></input>
     </div>
+    
+        <button  class="btn btn-primary" id='postMission'>Create</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button></form>
+    </div>
+    
   </div>
 
 </div>
@@ -127,9 +182,28 @@
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/popper/popper.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
-
+    <script src="js/jquery-1.11.1.js"></script>
+    <script src="js/socket.io.js"></script>
     <script src="js/ocu.js"></script>
+
+    <script>
+    $(document).ready(function(){
+    $(".rd1").click(function(){
+        $("#ft").hide();
+        $("#ftt").hide();
+        $("#fttt").hide();
+        $("h3").hide();
+    });
+    $(".rd2").click(function(){
+        $("#ft").show();
+        $("#ftt").show();
+        $("#fttt").show();
+        $("h3").show();
+    });
+    });
+      
+    </script>
+    
 </body>
 
 </ht
