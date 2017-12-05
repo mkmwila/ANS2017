@@ -1,0 +1,16 @@
+{
+  "name": "system-commander",
+  "version": "1.0.0",
+  "description": "",
+  "main": "system-commander.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin K. Mwila",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.19.2",
+    "socket.io": "^1.7.2",
+    "socket.io-client": "^2.0.4"
+  }
+}
