@@ -1,3 +1,4 @@
+
 /*  File : jaus-communicator.js
    ==========================================================================
 	Component ID = 35
@@ -105,189 +106,27 @@ io.on('connection', (socket) => { // socket io connection
     var connectingNodeInfo = {};
     var timeNow = moment().valueOf();
     socket.emit('register', { from: me, timeStamp: timeNow }, (nodeInfo) => {
-        connectingNodeInfo.regstrationTime = timeNow;
-        connectingNodeInfo.id = nodeInfo.id;
-        connectingNodeInfo.name = nodeInfo.name;
-        connectingNodeInfo.socketID = socket.id;
-        systemTree.push(connectingNodeInfo);
-        socket.join((nodeInfo.id).toString());
-        console.log(`\n\n => ${nodeInfo.name} has Connected to the G-Bat Nework!\n\n `);
+        let findobj = systemTree.find(o => o.id ==nodeInfo.id);
+        if(findobj===undefined){
+            
+            connectingNodeInfo.regstrationTime = timeNow;
+            connectingNodeInfo.id = nodeInfo.id;
+            connectingNodeInfo.name = nodeInfo.name;
+            connectingNodeInfo.socketID = socket.id;
+            systemTree.push(connectingNodeInfo);
+            socket.join((nodeInfo.id).toString());
+            console.log(`\n\n => ${nodeInfo.name} has Connected to the G-Bat Nework!\n\n `);
+            
+        }
+        else{            
+            console.log(`\n\n => ${nodeInfo.name} is already Connected to the G-Bat Nework!\n\n `);
+        }
+
         console.log('\n\n => Updated System Tree : ', JSON.stringify(systemTree, null, 4));
 
         socket.broadcast.emit('registration', connectingNodeInfo);
         io.emit('systemUpdate', systemTree);
 
-    });
-
-
-    //==========================================================================================
-    //                                  1. Management services
-    ///=========================================================================================
-    // 1.1 SetAuthority : Message ID = 0001h
-    //----------------------------------------
-    socket.on('0001h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name}is Setting Authority on ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '0001h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-
-    // 1.2 Shutdown : Message ID = 0002h
-    //-----------------------------------
-    socket.on('0002h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Shutting down the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '0002h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.3 Standby : Message ID = 0003h
-    //-----------------------------------
-    socket.on('0003h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Sending a Standby command to ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '0003h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.4 Resume : Message ID = 0004h
-    //-----------------------------------
-    socket.on('0004h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Sending a Resume command to ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '0004h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.5 Reset : Message ID = 0005h
-    //-----------------------------------------
-    socket.on('0005h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Sending a Reset command to ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '0005h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.6 SetEmergency : Message ID = 0006h
-    //-----------------------------------------
-    socket.on('0006h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Setting an Emergengy situation in the ${nodeInfo.recipient.name} `);
-        var ack = {
-            command: '0006h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.7 ClearEmergency : Message ID = 0007h
-    //-----------------------------------------
-    socket.on('0007h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is clearing the emergency situation set in the ${nodeInfo.recipient.name} `);
-        var ack = {
-            command: '0007h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.8 SetTime : Message ID = 0011h
-    //-----------------------------------------
-    socket.on('0011h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Setting the time of the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '0011h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-
-    // 1.9 QueryStatus : Message ID = 2002h
-    //-----------------------------------------
-    socket.on('2002h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is quering the Status of the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '2002h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.10 QueryHeartbeatPulse : Message ID = 2202h
-    //-----------------------------------------
-    socket.on('2202h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Querying the HeartBeat Pulse of ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '2202h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.11 QueryTime : Message ID = 2011h
-    //-----------------------------------------
-    socket.on('2011h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Querying the time from the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '2011h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.12 ReportStatus : Message ID = 4002h
-    //-----------------------------------------
-    socket.on('4002h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Reporting its status to the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '4202h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.13 ReportHeartbeatPulse : Message ID = 4202h
-    //------------------------------------------------
-    socket.on('4202h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Reporting its HeartBeat Pulse to the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '4202h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.14 ReportTime : Message ID = 4011h
-    //-----------------------------------------
-    socket.on('4011h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is Reporting its Time to the ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '4011h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
-    });
-
-    // 1.15 Acknowledgement : Message ID = 4400h
-    //-----------------------------------------------------
-    socket.on('4400h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is sending an Acknowledgement ${nodeInfo.recipient.name}`);
-        var ack = {
-            command: '4E00h'
-        };
-        var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
     });
 
     //==========================================================================================
@@ -1180,13 +1019,13 @@ io.on('connection', (socket) => { // socket io connection
             command: '0E02h'
         };
         var status = relaydMessages(nodeInfo, socket, ack);
-        acknowledge(status);
+         acknowledge(status);
     });
 
     // 19.4 PauseMission : Message ID = 0E03h
     //----------------------------------------
     socket.on('0E03h', (nodeInfo, acknowledge) => {
-        console.log(`\n => ${nodeInfo.sender.name} is sending a Pause Mission Command to ${nodeInfo.recipient.name}               `);
+        console.log(`\n => ${nodeInfo.sender.name} is sending a Pause Mission Command to ${nodeInfo.recipient.name}`);
         var ack = {
             command: '0E03h'
         };
