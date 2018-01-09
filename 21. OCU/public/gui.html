@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+    
 
     <title>G-BAT Operator Control Unit</title>
 
@@ -71,7 +71,7 @@
 
       	<class="form-inline" role="form">
       	<select id="mission_name"  class="btn btn-primary dropdown-toggle "> </select>
-       <input  class="btn btn-success btn-sg" type="button" value="Start Mission"  id='start_mission'>
+          <input  class="btn btn-success btn-sg" type="button" value="Start Mission"  id='start_mission'>
        <div class="col-md-2 col-sm-2 mb-2">
            <button class="btn btn-info" id="createMiison" data-toggle="modal" data-target="#createMission">Create Mission</button>
        </div>
@@ -135,8 +135,7 @@
           <div class="col-md-8">
             <b>X:
                 <input id="lat" name="lat" val="40.713956" />
-               
-              
+                          
                 <b>Y:
                 <input id="long" name="long" val="74.006653" /></b>
                 <br />
@@ -158,18 +157,27 @@
     </div>
     <div class="modal-body">
       <label>Mission Name</label>
-      <input id='name' type='text'></input>
-      <br>
+      <input id='name' name="missionaNamee" type='text'></input>
+      <br><br>
       <label>Description</label>
-      <input id='description' type='text'></input>
-      <br>
+      <input id='descriptionn' name="description" type='text'></input>
+      <br><br>
+      
+      <b>DESTINATION<br><br>
+
+      <b>X:
+        <input id="lat" name="x" type="number"/>
+           
+        <b>Y:
+        <input id="long" name="y" type="number"/></b>
       <div class="modal-footer">
       <label>Map</label>
       <input  type="file" name="myimage" id='image'></input>
     </div>
     
         <button  class="btn btn-primary" id='postMission'>Create</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button></form>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </form>
     </div>
     
   </div>
@@ -201,9 +209,10 @@
         $("h3").show();
     });
     });
-      
-    </script>
+
+</script>
+
     
 </body>
 
-</ht
+
