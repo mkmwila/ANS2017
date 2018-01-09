@@ -25,7 +25,7 @@ var SUCCESS = true,
  var systemTree = [me];
 
 
- var socket = io('http://localhost:3000');// ip address of the G-Bat network
+ var socket = io('http://146.64.244.159:3000');// ip address of the G-Bat network
 
  socket.on('connect', function() {
      console.log(socket.id); // 'G5p5...'
@@ -326,7 +326,8 @@ io.on('connection', function(client) {
     console.log('Missions',missions);
     var mission_names = [];
     missions.forEach(function(Amission){
-      mission_names.push(Amission.name);
+        console.log('Testing',Amission);
+      mission_names.push(Amission.missionName);
     });
     mission_names.sort(); // sort all missions by name
     console.log('All Missions created ...', mission_names);
@@ -340,7 +341,12 @@ io.on('connection', function(client) {
       $('#mission_name').html(list_of_missions)
 
  })
- 
+ var missI= {};
+ $.getJSON('/ocu/creatM',function(missionss){
+     console.log('Misssions from the server ::',missionss);
+     missI = missionss;
+     console.log('Misssions from the server ::',missI);
+ })
 
   // create a mission saves all the results on the database
 
@@ -350,6 +356,7 @@ io.on('connection', function(client) {
  //======================================================================================
  // Send the command  on button click to the system commander and it must save it to the
  // mongo dB
+
 
  $('#start_mission').bind('click', function() {
     console.log('mission starting');
@@ -425,15 +432,21 @@ io.on('connection', function(client) {
      })
  })
  $('#postMission').bind('click', function() {
-   var missionData  = {
-     'name':document.getElementById('name').value,
-     'description':document.getElementById('description').value,
-     'image':document.getElementById('image').file[0]
-   }
-   console.log('missionData Object', missionData.name);
-    $.post('/create/missions/',missionData);
-     window.location.replace("/");
-    alert('Mission Created', missionData.name)
+//    var missionData  = {
+//      'name':document.getElementById('name').value,
+//      'description':document.getElementById('description').value,
+//      'image':document.getElementById('image').file[0]
+//    }
+    console.log('sending create mission data to the worldModel to save to the mongoDB');
+    console.log('missionData Object', missI);
+    var missionInfo = {
+        from: 'OCU',
+        to: 'Mission Spooler',
+        missI
+    }
+
+    //  window.location.replace("/");
+    // alert('Mission Created', missionData.name)
 
    // Example of map info
    // Must be read from file (JSON) converted from a Google image
